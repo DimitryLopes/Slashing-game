@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -23,15 +24,32 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
     private GameObject loginContainer;
     [SerializeField]
     private GameObject lobbyContainer;
+    [SerializeField]
+    private string gameSceneName;
 
     private const string GameVersion = "1.0";
     private List<RoomInfo> availableRooms = new List<RoomInfo>();
 
     private void Start()
     {
+        PhotonNetwork.GameVersion = GameVersion;
         statusText.text = "Digite seu nome e entre em uma sala";
         connectButton.onClick.AddListener(OnJoinClicked);
         createRoomButton.onClick.AddListener(CreateRoom);
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdateRoomView();
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            PhotonNetwork.LoadLevel(gameSceneName);
+        }
+    }
+
+    private void UpdateRoomView()
+    {
+        statusText.text = $"Jogadores na sala: {PhotonNetwork.CurrentRoom.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}";
     }
 
     public void OnJoinClicked()
@@ -54,12 +72,12 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
         statusText.text = "Conectado! Entrando no lobby...";
         loginContainer.SetActive(false);
         lobbyContainer.SetActive(true);
-        PhotonNetwork.JoinLobby();
+        PhotonNetwork.JoinLobby(TypedLobby.Default);
     }
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(playerNameInput.text + "'s Room", new RoomOptions { MaxPlayers = 4 });
+        PhotonNetwork.CreateRoom(playerNameInput.text + "'s Room", new RoomOptions { MaxPlayers = 4, IsOpen = true, IsVisible = true });
     }
 
     public override void OnJoinedLobby()
@@ -69,6 +87,7 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
+        Debug.Log($"Atualização da lista de salas recebida. Total de salas: {roomList.Count}");
         availableRooms = roomList;
         UpdateRoomListUI();
     }
@@ -99,6 +118,10 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         statusText.text = $"Entrou na sala! Jogadores: {PhotonNetwork.CurrentRoom.PlayerCount}";
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
+        {
+            PhotonNetwork.LoadLevel(gameSceneName);
+        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
