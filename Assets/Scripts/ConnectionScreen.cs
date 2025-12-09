@@ -15,7 +15,7 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
     [SerializeField]
     private TMP_InputField playerNameInput;
     [SerializeField]
-    private TMP_Text statusText;
+    private TextMeshProUGUI statusText;
     [SerializeField]
     private Transform roomListContainer;
     [SerializeField]
@@ -120,6 +120,7 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
         statusText.text = $"Entrou na sala! Jogadores: {PhotonNetwork.CurrentRoom.PlayerCount}";
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
+            PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel(gameSceneName);
         }
     }

@@ -1,20 +1,24 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviourPun
 {
     [SerializeField]
-    private GameObject pointerPrefab;
-    private GameObject playerPointer;
+    private GameObject bladePrefab;
+
+    private GameObject playerBlade;
 
     private Camera mainCamera;
+    private int playerId => photonView.OwnerActorNr;
+    private readonly Dictionary<Collider2D, HitInfo> activeStrikes = new();
 
     void Start()
     {
         mainCamera = Camera.main;
         if (photonView.IsMine)
         {
-            playerPointer = Instantiate(pointerPrefab);
+            playerBlade = Instantiate(bladePrefab, transform);
         }
     }
 
@@ -29,20 +33,56 @@ public class PlayerController : MonoBehaviourPun
 
             Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
 
-            playerPointer.transform.position = worldPosition;
+            transform.position = worldPosition;
 
-            photonView.RPC("UpdateCirclePosition", RpcTarget.Others, worldPosition);
+            photonView.RPC(nameof(UpdateCirclePosition), RpcTarget.Others, worldPosition);
+        }
+    }
+
+    private Vector2 GetMousePosition()
+    {
+        return mainCamera.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    public void OnTriggerEnter2D(Collider2D collider2D)
+    {
+        if(collider2D.gameObject.CompareTag(Constants.Targets.Tag))
+        {
+            activeStrikes.Add(collider2D, new HitInfo(GetMousePosition(), (byte)playerId));
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag(Constants.Targets.Tag))
+        {
+            Target target = collision.gameObject.GetComponent<Target>();
+            
+            if(target.IsCutted)
+            {
+                if (activeStrikes.ContainsKey(collision))
+                {
+                    activeStrikes.Remove(collision);
+                    return;
+                }
+            }
+
+            HitInfo hitInfo = activeStrikes[collision];
+            hitInfo.ExitPoint = GetMousePosition();
+            target.Hit(hitInfo);
+
+            activeStrikes.Remove(collision);
         }
     }
 
     [PunRPC]
     private void UpdateCirclePosition(Vector3 position)
     {
-        if (playerPointer == null)
+        if (playerBlade == null)
         {
-            playerPointer = Instantiate(pointerPrefab);
+            playerBlade = Instantiate(bladePrefab, transform);
         }
 
-        playerPointer.transform.position = position;
+        playerBlade.transform.position = position;
     }
 }
