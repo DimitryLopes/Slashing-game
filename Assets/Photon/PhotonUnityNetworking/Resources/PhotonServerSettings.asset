@@ -42,6 +42,8 @@ MonoBehaviour:
   - UpdateCirclePosition
   - SyncIsCutted
   - Sync
+  - RPCSetup
+  - RPCHit
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

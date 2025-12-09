@@ -106,8 +106,8 @@ MonoBehaviour:
       m_Calls: []
   renderer: {fileID: 7181455580536174151}
   rb: {fileID: 2910865954641156780}
-  minForce: 100
-  maxForce: 300
+  minForce: 5
+  maxForce: 15
 --- !u!50 &2910865954641156780
 Rigidbody2D:
   serializedVersion: 4

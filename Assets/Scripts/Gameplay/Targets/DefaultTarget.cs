@@ -14,6 +14,5 @@ public class DefaultTarget : Target
         spriteRenderer.sprite = AssetService.GetTargetSprite(info.SpriteKey);
         transform.position = info.StartPosition;
         transform.localScale = Vector3.one * info.Size;
-
     }
 }

@@ -12,25 +12,46 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     public void Hit(HitInfo info)
     {
-        if (!photonView.IsMine) return;
+        ExecuteHit(info);
+        photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
+    }
 
-        SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
+    [PunRPC]
+    public void RPCHit(byte player, Vector2 entryPoint, Vector2 exitPoint)
+    {
+        var info = new HitInfo(entryPoint, player);
+        info.ExitPoint = exitPoint;
+        ExecuteHit(info);
+    }
+
+    private void ExecuteHit(HitInfo info)
+    {
         IsCutted = true;
+        SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
         OnHit(info);
-
-        photonView.RPC(nameof(Sync), RpcTarget.Others, IsCutted);
     }
 
     public void Setup(TargetData data)
     {
-        if (!photonView.IsMine) return; 
+        ExecuteSetup(data);
 
+        photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health, data.Speed, data.SpriteKey);
+    }
+
+    [PunRPC]
+    protected void RPCSetup(float size, float hp, float speed, string spriteKey)
+    {
+        TargetData data = new TargetData(size, hp, speed, transform.position, spriteKey);
+
+        ExecuteSetup(data);
+    }
+
+    private void ExecuteSetup(TargetData data)
+    {
         IsCutted = false;
-        gameObject.SetActive(!IsCutted);
+        gameObject.SetActive(true);
         OnSetup(data);
-
-        photonView.RPC(nameof(Sync), RpcTarget.Others, IsCutted);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -47,13 +68,5 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     public abstract void OnHit(HitInfo hitInfo);
 
-    public abstract void OnSetup(TargetData data); 
-    
-    [PunRPC]
-    public void Sync(bool isCutted)
-    {
-        IsCutted = isCutted;
-        gameObject.SetActive(!IsCutted);
-    }
-
+    public abstract void OnSetup(TargetData data);
 }

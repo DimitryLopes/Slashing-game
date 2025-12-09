@@ -57,7 +57,7 @@ public class TargetGenerator : MonoBehaviour
 
             if (targetComponent != null)
             {
-                TargetData targetData = new TargetData(1.0f, 1, 5.0f, spawnPoint.position, TargetType.Default.ToString()); // Exemplo de TargetData
+                TargetData targetData = new TargetData(1.0f, 1, 5.0f, spawnPoint.position, TargetType.Default.ToString());
                 targetComponent.Setup(targetData);
             }
         }

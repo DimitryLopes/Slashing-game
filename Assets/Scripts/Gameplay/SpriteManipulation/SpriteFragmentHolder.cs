@@ -22,7 +22,7 @@ public class SpriteFragmentHolder : Activateable
 
     public void ApplyForce(Vector2 direction)
     {
-        rb.AddForce(direction.normalized * Random.Range(minForce, maxForce));
+        rb.AddForce(direction.normalized * Random.Range(minForce, maxForce), ForceMode2D.Impulse);
     }
 
     private void Update()
