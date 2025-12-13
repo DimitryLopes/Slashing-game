@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
-public class TargetGenerator : MonoBehaviour
+public class TargetSpawner : MonoBehaviour
 {
     [SerializeField]
+    private List<TargetSpawnPoint> spawnPoints;
+    [SerializeField]
     private List<TargetTemplate> targetTemplates;
+
+    [SerializeField]
+    private Transform middle;
+
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
 
     private void Awake()
@@ -30,14 +36,14 @@ public class TargetGenerator : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    private Transform spawnPoint;
-
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (PhotonNetwork.IsMasterClient)
         {
-            SpawnDefaultTarget();
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                SpawnDefaultTarget();
+            }
         }
     }
 
@@ -49,7 +55,7 @@ public class TargetGenerator : MonoBehaviour
         {
             GameObject instantiatedTarget = PhotonNetwork.Instantiate(
                 string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, defaultTemplate.type),
-                spawnPoint.position,
+                middle.position,
                 Quaternion.identity
             );
 
@@ -57,7 +63,11 @@ public class TargetGenerator : MonoBehaviour
 
             if (targetComponent != null)
             {
-                TargetData targetData = new TargetData(1.0f, 1, 5.0f, spawnPoint.position, TargetType.Default.ToString());
+                var spawnPoint = spawnPoints.GetRandom();
+                Vector2 launchDirection = spawnPoint.GetLaunchDirection(middle.position);
+
+                TargetData targetData = new TargetData(1.0f, 1, 5.0f, spawnPoint.transform.position,
+                    launchDirection, TargetType.Default.ToString());
                 targetComponent.Setup(targetData);
             }
         }
@@ -66,6 +76,7 @@ public class TargetGenerator : MonoBehaviour
             Debug.LogError("DefaultTarget not found in the target database!");
         }
     }
+
 }
 
 [Serializable]

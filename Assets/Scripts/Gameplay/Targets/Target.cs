@@ -9,6 +9,13 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     protected SpriteRenderer spriteRenderer;
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
+    private void Awake()
+    {
+        if (!photonView.IsMine)
+        {
+            rigidbody2D.isKinematic = true;
+        }
+    }
 
     public void Hit(HitInfo info)
     {
@@ -34,16 +41,20 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     public void Setup(TargetData data)
     {
-        ExecuteSetup(data);
+        ExecuteSetup(data); 
+        
+        if (photonView.IsMine)
+            rigidbody2D.velocity = data.LaunchDirection * data.Speed;
 
-        photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health, data.Speed, data.SpriteKey);
+        photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
+            data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition);
     }
 
     [PunRPC]
-    protected void RPCSetup(float size, float hp, float speed, string spriteKey)
+    protected void RPCSetup(float size, float hp, float speed, string spriteKey, Vector2 launchDirection, Vector3 startPosition)
     {
-        TargetData data = new TargetData(size, hp, speed, transform.position, spriteKey);
-
+        transform.position = startPosition;
+        TargetData data = new TargetData(size, hp, speed, startPosition, launchDirection, spriteKey);
         ExecuteSetup(data);
     }
 
