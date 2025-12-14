@@ -10,9 +10,6 @@ public class TargetSpawner : MonoBehaviour
     [SerializeField]
     private List<TargetTemplate> targetTemplates;
 
-    [SerializeField]
-    private Transform middle;
-
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
 
     private void Awake()
@@ -55,7 +52,7 @@ public class TargetSpawner : MonoBehaviour
         {
             GameObject instantiatedTarget = PhotonNetwork.Instantiate(
                 string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, defaultTemplate.type),
-                middle.position,
+                transform.position,
                 Quaternion.identity
             );
 
@@ -64,9 +61,9 @@ public class TargetSpawner : MonoBehaviour
             if (targetComponent != null)
             {
                 var spawnPoint = spawnPoints.GetRandom();
-                Vector2 launchDirection = spawnPoint.GetLaunchDirection(middle.position);
+                Vector2 launchDirection = spawnPoint.GetLaunchDirection();
 
-                TargetData targetData = new TargetData(1.0f, 1, 5.0f, spawnPoint.transform.position,
+                TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
                     launchDirection, TargetType.Default.ToString());
                 targetComponent.Setup(targetData);
             }

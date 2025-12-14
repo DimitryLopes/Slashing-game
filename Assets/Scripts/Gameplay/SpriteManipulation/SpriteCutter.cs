@@ -28,7 +28,7 @@ public class SpriteCutter : MonoBehaviour
 
         for (int i = 0; i < slicedSprites.Length; i++)
         {
-            SpriteFragmentHolder holder = Instantiate(holderPrefab, transform.position, Quaternion.identity);
+            SpriteFragmentHolder holder = Instantiate(holderPrefab, startPoint, Quaternion.identity);
             holder.SetSprite(slicedSprites[i]);
             holder.ApplyForce(endPoint - startPoint);
             holder.Activate(true);

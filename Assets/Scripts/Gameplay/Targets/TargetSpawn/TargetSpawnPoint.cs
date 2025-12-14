@@ -5,40 +5,31 @@ public class TargetSpawnPoint : MonoBehaviour
     [Header("Setup")]
     public Edge edge;
     [Range(0f, 1f)]
-    public float normalizedPosition; // along the edge
+    public float normalizedPosition;
 
-    [Header("Deviation Profiles")]
-    public SpawnDeviationProfile leftRightProfile;
-    public SpawnDeviationProfile upDownProfile;
+    [Header("Deviation Objects")]
+    public Transform minObject;
+    public Transform middleObject;
+    public Transform maxObject;
 
-    public Vector2 GetLaunchDirection(Vector2 screenCenter)
+    public Vector2 GetLaunchDirection()
     {
         Vector2 spawnPos = transform.position;
-        Vector2 baseDir = (screenCenter - spawnPos).normalized;
 
-        SpawnDeviationProfile profile = GetProfile();
-        float t = GetInterpolationT();
+        Vector2 baseDir = ((Vector2)middleObject.position - spawnPos).normalized;
 
-        var (minDev, maxDev) = profile.Evaluate(t);
+        float lowerAngle = CalculateAngle(spawnPos, minObject.position, baseDir);
+        float upperAngle = CalculateAngle(spawnPos, maxObject.position, baseDir);
 
-        float deviation = Random.Range(minDev, maxDev);
-        deviation *= Random.value < 0.5f ? -1f : 1f;
+        float deviation = Random.Range(lowerAngle, upperAngle);
 
         return Rotate(baseDir, deviation);
     }
 
-    private SpawnDeviationProfile GetProfile()
+    private float CalculateAngle(Vector2 origin, Vector2 target, Vector2 baseDir)
     {
-        return edge == Edge.Left || edge == Edge.Right
-            ? leftRightProfile
-            : upDownProfile;
-    }
-
-    private float GetInterpolationT()
-    {
-        // Distance from center of the edge
-        float distFromCenter = Mathf.Abs(normalizedPosition - 0.5f) * 2f;
-        return 1f - Mathf.Clamp01(distFromCenter);
+        Vector2 dir = (target - origin).normalized;
+        return Vector2.SignedAngle(baseDir, dir);
     }
 
     private Vector2 Rotate(Vector2 v, float degrees)
@@ -52,4 +43,20 @@ public class TargetSpawnPoint : MonoBehaviour
             v.x * sin + v.y * cos
         );
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Vector2 spawnPos = transform.position;
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(spawnPos, middleObject.position);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(spawnPos, minObject.position);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(spawnPos, maxObject.position);
+    }
+#endif
 }
