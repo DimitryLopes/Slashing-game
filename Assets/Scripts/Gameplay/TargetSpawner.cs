@@ -9,12 +9,26 @@ public class TargetSpawner : MonoBehaviour
     private List<TargetSpawnPoint> spawnPoints;
     [SerializeField]
     private List<TargetTemplate> targetTemplates;
+    [SerializeField]
+    private DifficultyData baseDifficultyData;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
+
+    private DifficultyData currentDifficultyData;
+    private float difficultyTimer;
+    private float spawnTimer;
 
     private void Awake()
     {
         FillDictionary();
+        StartGame();
+    }
+
+    private void StartGame()
+    {
+        currentDifficultyData = new DifficultyData(baseDifficultyData);
+        spawnTimer = 0f;
+        difficultyTimer = 0f;
     }
 
     private void FillDictionary()
@@ -37,9 +51,18 @@ public class TargetSpawner : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            spawnTimer += Time.deltaTime;
+            difficultyTimer += Time.deltaTime;
+            if (spawnTimer >= currentDifficultyData.TargetSpawnInterval)
             {
+                spawnTimer = 0f;
                 SpawnDefaultTarget();
+            }
+
+            if(difficultyTimer >= currentDifficultyData.SpawnIntervalDecreaseRate)
+            {
+                difficultyTimer = 0f;
+                currentDifficultyData.TargetSpawnInterval = Mathf.Max(currentDifficultyData.MinSpawnInterval, currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
             }
         }
     }

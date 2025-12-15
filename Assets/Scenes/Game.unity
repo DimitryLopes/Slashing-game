@@ -757,6 +757,12 @@ MonoBehaviour:
   targetTemplates:
   - type: 0
     target: {fileID: 6039017748327409157, guid: 818e3a9bf482e384d9c0264ecd3c35b0, type: 3}
+  baseDifficultyData:
+    TargetSpawnInterval: 2
+    SpawnIntervalDecreaseRate: 10
+    SpawnIntervalDecreaseAmount: 0.1
+    MinSpawnInterval: 0.3
+    ScoreMultiplier: 1
 --- !u!4 &809563169
 Transform:
   m_ObjectHideFlags: 0
