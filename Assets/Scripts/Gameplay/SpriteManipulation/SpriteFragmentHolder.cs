@@ -1,3 +1,4 @@
+using Photon.Pun;
 using UnityEngine;
 
 public class SpriteFragmentHolder : Activateable
@@ -6,12 +7,8 @@ public class SpriteFragmentHolder : Activateable
     private SpriteRenderer renderer;
     [SerializeField]
     private Rigidbody2D rb;
-    [SerializeField]
-    private float minForce = 100f;
-    [SerializeField]
-    private float maxForce = 300f;
 
-    private const float DisableDelay = 5f;
+    private const float DisableDelay = 1f;
 
     private float disableTimer = 0f;
 
@@ -20,9 +17,14 @@ public class SpriteFragmentHolder : Activateable
         renderer.sprite = sprite;
     }
 
-    public void ApplyForce(Vector2 direction)
+    public void ApplyForce(Vector2 force)
     {
-        rb.AddForce(direction.normalized * Random.Range(minForce, maxForce), ForceMode2D.Impulse);
+        rb.AddForce(force, ForceMode2D.Impulse);
+    }
+
+    public void ApplyTorque(float torque)
+    {
+        rb.AddTorque(torque, ForceMode2D.Impulse);
     }
 
     private void Update()
@@ -33,5 +35,15 @@ public class SpriteFragmentHolder : Activateable
             Deactivate();
             disableTimer = 0f;
         }
+    }
+
+    public override void OnActivate()
+    {
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.WakeUp();
+        disableTimer = 0f;
+        transform.localScale = Vector3.one;
+        transform.LeanScale(Vector3.zero, DisableDelay).setEase(LeanTweenType.easeInQuint);
     }
 }

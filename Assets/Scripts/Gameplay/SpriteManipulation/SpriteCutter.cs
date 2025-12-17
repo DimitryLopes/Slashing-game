@@ -5,10 +5,16 @@ public class SpriteCutter : MonoBehaviour
 {
     [SerializeField]
     private SpriteFragmentHolder holderPrefab;
+    [SerializeField] 
+    private float normalForce = 6f;
+    [SerializeField]
+    private float alongCutForce = 2f;
+    [SerializeField] 
+    private float rotationForce = 5f;
 
     public static SpriteCutter Instance { get; private set; }
 
-    public List<SpriteFragmentHolder> holders;
+    public List<SpriteFragmentHolder> holders = new();
 
     private void Awake()
     {
@@ -26,14 +32,40 @@ public class SpriteCutter : MonoBehaviour
     {
         Sprite[] slicedSprites = SliceSprite(sprite, worldPosition, startPoint, endPoint);
 
-        for (int i = 0; i < slicedSprites.Length; i++)
+        Vector2 cutDir = (endPoint - startPoint).normalized;
+        Vector2 cutNormal = new Vector2(-cutDir.y, cutDir.x);
+
+        SpawnFragment(slicedSprites[0], worldPosition.position, cutNormal, cutDir);
+        SpawnFragment(slicedSprites[1], worldPosition.position, -cutNormal, cutDir);
+    }
+
+    private SpriteFragmentHolder GetAvailableHolder()
+    {
+        foreach (var holder in holders)
         {
-            SpriteFragmentHolder holder = Instantiate(holderPrefab, startPoint, Quaternion.identity);
-            holder.SetSprite(slicedSprites[i]);
-            holder.ApplyForce(endPoint - startPoint);
-            holder.Activate(true);
-            holders.Add(holder);
+            if (!holder.IsActive)
+            {
+                return holder;
+            }
         }
+
+        SpriteFragmentHolder newHolder = Instantiate(holderPrefab, transform.position, Quaternion.identity);
+        holders.Add(newHolder);
+        return newHolder;
+    }
+
+    private void SpawnFragment(Sprite sprite, Vector3 position, Vector2 normal, Vector2 cutDir)
+    {
+        SpriteFragmentHolder holder = GetAvailableHolder();
+
+        holder.transform.position = position;
+        holder.SetSprite(sprite);
+
+        Vector2 force = normal * normalForce + cutDir * alongCutForce;
+
+        holder.Activate(true);
+        holder.ApplyForce(force);
+        holder.ApplyTorque(Random.Range(-rotationForce, rotationForce));
     }
 
     private Sprite[] SliceSprite(Sprite sprite, Transform worldPosition, Vector2 worldStart, Vector2 worldEnd)

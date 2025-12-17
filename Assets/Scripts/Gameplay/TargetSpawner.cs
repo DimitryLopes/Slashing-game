@@ -13,6 +13,7 @@ public class TargetSpawner : MonoBehaviour
     private DifficultyData baseDifficultyData;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
+    private Dictionary<TargetType, List<Target>> intantiatedTargets;
 
     private DifficultyData currentDifficultyData;
     private float difficultyTimer;
@@ -45,6 +46,12 @@ public class TargetSpawner : MonoBehaviour
                 Debug.LogWarning($"Duplicate target type found in database: {template.type}");
             }
         }
+
+        intantiatedTargets = new Dictionary<TargetType, List<Target>>();
+        foreach (TargetType type in Enum.GetValues(typeof(TargetType)))
+        {
+            intantiatedTargets[type] = new List<Target>();
+        }
     }
 
     private void Update()
@@ -73,13 +80,7 @@ public class TargetSpawner : MonoBehaviour
 
         if (defaultTemplate.target != null)
         {
-            GameObject instantiatedTarget = PhotonNetwork.Instantiate(
-                string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, defaultTemplate.type),
-                transform.position,
-                Quaternion.identity
-            );
-
-            Target targetComponent = instantiatedTarget.GetComponent<Target>();
+            DefaultTarget targetComponent = GetAvailableTarget<DefaultTarget>(TargetType.Default);
 
             if (targetComponent != null)
             {
@@ -95,6 +96,25 @@ public class TargetSpawner : MonoBehaviour
         {
             Debug.LogError("DefaultTarget not found in the target database!");
         }
+    }
+
+    private T GetAvailableTarget<T>(TargetType targetType) where T : Target
+    {
+        foreach (T target in intantiatedTargets[targetType])
+        {
+            if (!target.gameObject.activeInHierarchy)
+            {
+                return target;
+            }
+        }
+
+        T newTarget = PhotonNetwork.Instantiate(
+                string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, targetType),
+                transform.position,
+                Quaternion.identity
+            ).GetComponent<T>();
+        intantiatedTargets[targetType].Add(newTarget);
+        return newTarget;
     }
 
 }

@@ -1528,6 +1528,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holderPrefab: {fileID: 1192789886539407856, guid: 55d52caade0a9ab43b3a124f2f0f1f91, type: 3}
+  normalForce: 6
+  alongCutForce: 2
+  rotationForce: 5
   holders: []
 --- !u!4 &1513761320
 Transform:

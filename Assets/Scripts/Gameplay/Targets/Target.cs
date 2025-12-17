@@ -9,11 +9,28 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     protected SpriteRenderer spriteRenderer;
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
+
     private void Awake()
     {
         if (!photonView.IsMine)
         {
             rigidbody2D.isKinematic = true;
+        }
+    }
+
+    private void Update()
+    {
+        if(PhotonNetwork.IsMasterClient)
+            CheckOutOfBounds();        
+    }
+
+    private void CheckOutOfBounds()
+    {
+        Vector3 p = transform.position;
+
+        if (p.y < -12f || p.y > 12f || p.x < -10f || p.x > 12f)
+        {
+            gameObject.SetActive(false);
         }
     }
 
@@ -31,11 +48,18 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         ExecuteHit(info);
     }
 
+    [PunRPC]
+    public void RPCDeactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
     private void ExecuteHit(HitInfo info)
     {
         IsCutted = true;
         SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
+
         OnHit(info);
     }
 

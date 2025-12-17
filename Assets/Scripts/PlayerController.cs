@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviourPun
 
     public void OnTriggerEnter2D(Collider2D collider2D)
     {
-        if(collider2D.gameObject.CompareTag(Constants.Targets.Tag))
+        if(collider2D.gameObject.CompareTag(Constants.Tags.TARGET_TAG))
         {
             activeStrikes.Add(collider2D, new HitInfo(GetMousePosition(), (byte)playerId));
         }
@@ -54,7 +54,7 @@ public class PlayerController : MonoBehaviourPun
 
     public void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag(Constants.Targets.Tag))
+        if(collision.gameObject.CompareTag(Constants.Tags.TARGET_TAG))
         {
             Target target = collision.gameObject.GetComponent<Target>();
             

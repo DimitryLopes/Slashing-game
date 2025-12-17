@@ -6,8 +6,9 @@ public class Constants
         public const string TARGET_PREFAB_FORMAT = "Target_{0}";
     }
 
-    public static class Targets
+    public static class Tags
     {
-        public const string Tag = "Target";
+        public const string TARGET_TAG = "Target";
+        public const string DEATH_PLANE_TAG = "Death Plane";
     }
 }
