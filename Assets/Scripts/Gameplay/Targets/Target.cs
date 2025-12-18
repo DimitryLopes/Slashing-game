@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System;
 
 public abstract class Target : MonoBehaviourPun, IPunObservable
 {
@@ -9,6 +10,8 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     protected SpriteRenderer spriteRenderer;
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
+
+    private Action onMiss;
 
     private void Awake()
     {
@@ -31,6 +34,11 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         if (p.y < -12f || p.y > 12f || p.x < -10f || p.x > 12f)
         {
             gameObject.SetActive(false);
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                onMiss?.Invoke();
+            }
         }
     }
 
@@ -63,9 +71,10 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         OnHit(info);
     }
 
-    public void Setup(TargetData data)
+    public void Setup(TargetData data, Action onMiss)
     {
-        ExecuteSetup(data); 
+        ExecuteSetup(data);
+        this.onMiss = onMiss;
         
         if (photonView.IsMine)
             rigidbody2D.velocity = data.LaunchDirection * data.Speed;

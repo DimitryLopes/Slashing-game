@@ -18,18 +18,22 @@ public class TargetSpawner : MonoBehaviour
     private DifficultyData currentDifficultyData;
     private float difficultyTimer;
     private float spawnTimer;
+    private bool canSpawn;
+
+    private Action onTargetMissed;
 
     private void Awake()
     {
         FillDictionary();
-        StartGame();
     }
 
-    private void StartGame()
+    public void EnableSpawn(Action onTargetMiss)
     {
+        onTargetMissed = onTargetMiss;
         currentDifficultyData = new DifficultyData(baseDifficultyData);
         spawnTimer = 0f;
         difficultyTimer = 0f;
+        canSpawn = true;
     }
 
     private void FillDictionary()
@@ -56,22 +60,22 @@ public class TargetSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            spawnTimer += Time.deltaTime;
-            difficultyTimer += Time.deltaTime;
-            if (spawnTimer >= currentDifficultyData.TargetSpawnInterval)
-            {
-                spawnTimer = 0f;
-                SpawnDefaultTarget();
-            }
+        if (!canSpawn) return;
+        if (!PhotonNetwork.IsMasterClient) return;
 
-            if(difficultyTimer >= currentDifficultyData.SpawnIntervalDecreaseRate)
-            {
-                difficultyTimer = 0f;
-                currentDifficultyData.TargetSpawnInterval = Mathf.Max(currentDifficultyData.MinSpawnInterval, currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
-            }
+        spawnTimer += Time.deltaTime;
+        difficultyTimer += Time.deltaTime;
+        if (spawnTimer >= currentDifficultyData.TargetSpawnInterval)
+        {
+            spawnTimer = 0f;
+            SpawnDefaultTarget();
         }
+
+        if (difficultyTimer < currentDifficultyData.SpawnIntervalDecreaseRate) return;
+
+        difficultyTimer = 0f;
+        currentDifficultyData.TargetSpawnInterval = Mathf.Max(currentDifficultyData.MinSpawnInterval,
+            currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
     }
 
     private void SpawnDefaultTarget()
@@ -89,7 +93,7 @@ public class TargetSpawner : MonoBehaviour
 
                 TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
                     launchDirection, TargetType.Default.ToString());
-                targetComponent.Setup(targetData);
+                targetComponent.Setup(targetData, onTargetMissed);
             }
         }
         else
