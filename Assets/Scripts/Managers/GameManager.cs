@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPun
 {
     //InGame state
     [SerializeField]
@@ -114,6 +114,13 @@ public class GameManager : MonoBehaviour
     }
     
     private void OnTargetMiss()
+    {
+        LoseLife();
+        photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
+    }
+
+    [PunRPC]
+    private void RPCLoseLife()
     {
         LoseLife();
     }

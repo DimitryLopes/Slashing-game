@@ -61,7 +61,6 @@ public class TargetSpawner : MonoBehaviour
     private void Update()
     {
         if (!canSpawn) return;
-        if (!PhotonNetwork.IsMasterClient) return;
 
         spawnTimer += Time.deltaTime;
         difficultyTimer += Time.deltaTime;
