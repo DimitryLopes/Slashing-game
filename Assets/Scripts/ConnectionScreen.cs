@@ -24,8 +24,6 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
     private GameObject loginContainer;
     [SerializeField]
     private GameObject lobbyContainer;
-    [SerializeField]
-    private string gameSceneName;
 
     private const string GameVersion = "1.0";
     private List<RoomInfo> availableRooms = new List<RoomInfo>();
@@ -43,7 +41,7 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
         UpdateRoomView();
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
-            PhotonNetwork.LoadLevel(gameSceneName);
+            PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
         }
     }
 
@@ -121,7 +119,7 @@ public class ConnectionScreen : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.LoadLevel(gameSceneName);
+            PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
         }
     }
 

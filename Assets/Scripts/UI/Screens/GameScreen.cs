@@ -1,18 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class GameScreen : MonoBehaviour
+public class GameScreen : UIScreen<GameScreenController>
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private TextMeshProUGUI livesText;
+
+    protected override void OnBeforeShow()
     {
-        
+        base.OnBeforeShow();
+        EventManager.OnPlayerDamaged.AddListener(UpdateLives);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateLives(int lives)
     {
-        
+        livesText.text = lives.ToString();
+    }
+
+    protected override void OnBeforeHide()
+    {
+        base.OnBeforeHide();
+        EventManager.OnPlayerDamaged.RemoveListener(UpdateLives);
     }
 }

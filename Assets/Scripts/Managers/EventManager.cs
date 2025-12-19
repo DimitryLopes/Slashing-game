@@ -19,4 +19,5 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<IScreen> OnScreenAfterShowEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeHideEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeShowEvent = new UnityEvent<IScreen>();
+    public static UnityEvent<int> OnPlayerDamaged = new UnityEvent<int>();
 }

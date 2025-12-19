@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   screenDataBase: {fileID: 11400000, guid: 0884edf06974e2f44a4143fa485701c1, type: 2}
+  screenContainer: {fileID: 1022812538}
 --- !u!1 &136785580
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +380,6 @@ MonoBehaviour:
   roomButtonPrefab: {fileID: 8508211849851158431, guid: f72451ef80b852d48b8adcbcd4d95131, type: 3}
   loginContainer: {fileID: 1748589889}
   lobbyContainer: {fileID: 975806423}
-  gameSceneName: Game
 --- !u!4 &418060375
 Transform:
   m_ObjectHideFlags: 0
@@ -484,8 +484,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1022812538}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &538212622
@@ -1076,6 +1075,7 @@ GameObject:
   - component: {fileID: 1022812541}
   - component: {fileID: 1022812540}
   - component: {fileID: 1022812539}
+  - component: {fileID: 1022812542}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1099,7 +1099,7 @@ RectTransform:
   - {fileID: 1748589890}
   - {fileID: 975806424}
   - {fileID: 821247178}
-  m_Father: {fileID: 519420032}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1163,12 +1163,24 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!114 &1022812542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022812537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56dde54659b4ade4bbb655df832906c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1043067360
 GameObject:
   m_ObjectHideFlags: 0
@@ -2447,6 +2459,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2125773963}
   - component: {fileID: 2125773964}
+  - component: {fileID: 2125773965}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2484,10 +2497,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialLives: 3
   targetSpawner: {fileID: 1559725419}
+--- !u!114 &2125773965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125773962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1022812538}
   - {fileID: 519420032}
   - {fileID: 991974847}
   - {fileID: 418060375}

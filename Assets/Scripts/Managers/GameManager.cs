@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviourPun
 {
     //InGame state
@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviourPun
 
     private void Start()
     {
+        SceneManager.sceneLoaded += ChangeStateToInGame;
         ChangeState(GameState.Menu);
     }
 
@@ -102,6 +103,12 @@ public class GameManager : MonoBehaviourPun
         Debug.Log("Entered EndGame state.");
     }
 
+    private void ChangeStateToInGame(Scene scene, LoadSceneMode mode)
+    {
+        if(scene.name == Constants.Scenes.GAME)
+        ChangeState(GameState.InGame);
+    }
+
     #region InGame
     private IEnumerator HandleInGameState()
     {
@@ -110,13 +117,14 @@ public class GameManager : MonoBehaviourPun
         yield return new WaitForSeconds(3f);
         if(PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn(OnTargetMiss);
+        ScreenManager.Instance.Show<GameScreen>(new GameScreenController());
         Debug.Log("Players can now play!");
     }
     
     private void OnTargetMiss()
     {
         LoseLife();
-        photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
+        photonView.RPC(nameof(RPCLoseLife), RpcTarget.Others);
     }
 
     [PunRPC]
@@ -129,6 +137,7 @@ public class GameManager : MonoBehaviourPun
     {
         if(Lives <= 0) return;
         Lives--;
+        EventManager.OnPlayerDamaged.Invoke(Lives);
         if(Lives == 0)
         {
             Debug.Log("No lives left. Game Over!");

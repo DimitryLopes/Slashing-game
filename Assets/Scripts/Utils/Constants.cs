@@ -6,6 +6,11 @@ public class Constants
         public const string TARGET_PREFAB_FORMAT = "Target_{0}";
     }
 
+    public static class Scenes
+    {
+        public const string GAME = "Game";
+    }
+
     public static class Tags
     {
         public const string TARGET_TAG = "Target";

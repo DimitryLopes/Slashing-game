@@ -6,6 +6,8 @@ public class ScreenManager : MonoBehaviour
 {
     [SerializeField]
     private ScreenDataBase screenDataBase;
+    [SerializeField]
+    private Transform screenContainer;
 
     public static ScreenManager Instance { get; private set; }
 
@@ -16,6 +18,7 @@ public class ScreenManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        screenDataBase.SetUp();
         Instance = this;
     }
 
@@ -126,7 +129,7 @@ public class ScreenManager : MonoBehaviour
     private TScreen InstantiateScreen<TScreen>() where TScreen : IScreen
     {
         Type type = typeof(TScreen);
-        TScreen newScreen = Instantiate(screenDataBase.UIScreens[typeof(TScreen)]).GetComponent<TScreen>();
+        TScreen newScreen = Instantiate(screenDataBase.UIScreens[typeof(TScreen)], screenContainer).GetComponent<TScreen>();
         if (newScreen != null)
             instantiatedScreens.Add(type, newScreen);
         return newScreen;
