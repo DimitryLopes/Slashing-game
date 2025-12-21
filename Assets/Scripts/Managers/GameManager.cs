@@ -100,7 +100,8 @@ public class GameManager : MonoBehaviourPun
 
     private void HandleEndGameState()
     {
-        Debug.Log("Entered EndGame state.");
+        targetSpawner.DisableSpawn();
+        ScreenManager.Instance.Show<GameOverScreen>(new GameOverScreenController());
     }
 
     private void ChangeStateToInGame(Scene scene, LoadSceneMode mode)

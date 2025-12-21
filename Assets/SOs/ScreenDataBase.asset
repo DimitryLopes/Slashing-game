@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ScreenDataBase
   m_EditorClassIdentifier: 
   RegisteredScreens:
+  - {fileID: 504275444458618381, guid: c55262f39ec3a364b92567a364f0e8c8, type: 3}
   - {fileID: 1911287932262267239, guid: 964fb57f54532004794f07f91d518748, type: 3}

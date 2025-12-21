@@ -36,6 +36,12 @@ public class TargetSpawner : MonoBehaviour
         canSpawn = true;
     }
 
+    public void DisableSpawn()
+    {
+        canSpawn = false;
+        DeactivateAllTargets();
+    }
+
     private void FillDictionary()
     {
         targetDatabase = new Dictionary<TargetType, TargetTemplate>();
@@ -120,6 +126,16 @@ public class TargetSpawner : MonoBehaviour
         return newTarget;
     }
 
+    private void DeactivateAllTargets()
+    {
+        foreach (var kvp in intantiatedTargets)
+        {
+            foreach (Target target in intantiatedTargets[kvp.Key])
+            {
+                target.gameObject.SetActive(false);
+            }
+        }
+    }
 }
 
 [Serializable]
