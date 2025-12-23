@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Photon.Realtime;
 
 public class EventManager : MonoBehaviour
 {
@@ -7,7 +10,7 @@ public class EventManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             return;
@@ -20,4 +23,10 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<IScreen> OnScreenBeforeHideEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeShowEvent = new UnityEvent<IScreen>();
     public static UnityEvent<int> OnPlayerDamaged = new UnityEvent<int>();
+
+    public static Action OnConnectedToMasterEvent;
+    public static Action<List<RoomInfo>> OnRoomListUpdateEvent;
+    public static Action<RoomInfo, Player> OnPlayerJoinedRoomEvent;
+    public static Action<RoomInfo> OnJoinedRoomEvent;
+    //public static Action<string> OnJoinRoomFailedEvent;
 }
