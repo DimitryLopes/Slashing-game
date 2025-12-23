@@ -8,6 +8,8 @@ public struct TargetData
     private Vector3 startPosition;
     private Vector2 launchDirection;
     private string spriteKey;
+    private float minScore;
+    private float maxScore;
 
     public float Size => size;
     public float Health => health;
@@ -15,8 +17,13 @@ public struct TargetData
     public Vector3 StartPosition => startPosition;
     public string SpriteKey => spriteKey;
     public Vector2 LaunchDirection => launchDirection;
+    public float MinScore => minScore;
+    public float MaxScore => maxScore;
 
-    public TargetData(float size, float health, float speed, Vector3 start_position, Vector2 launchDirection, string spriteKey)
+
+    public TargetData(float size, float health, float speed,
+        Vector3 start_position, Vector2 launchDirection, string spriteKey,
+        float minScore, float maxScore)
     {
         this.size = size;
         this.health = health;
@@ -24,5 +31,7 @@ public struct TargetData
         this.startPosition = start_position;
         this.launchDirection = launchDirection;
         this.spriteKey = spriteKey;
+        this.minScore = minScore;
+        this.maxScore = maxScore;
     }
 }

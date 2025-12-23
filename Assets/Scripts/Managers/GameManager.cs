@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviourPun
     [SerializeField]
     private TargetSpawner targetSpawner;
 
+    private float currentScore;
+
     public static GameManager Instance { get; private set; }
 
     public int Lives { get; private set; }
@@ -101,7 +103,7 @@ public class GameManager : MonoBehaviourPun
     private void HandleEndGameState()
     {
         targetSpawner.DisableSpawn();
-        ScreenManager.Instance.Show<GameOverScreen>(new GameOverScreenController());
+        ScreenManager.Instance.Show<GameOverScreen>(new GameOverScreenController(currentScore));
     }
 
     private void ChangeStateToInGame(Scene scene, LoadSceneMode mode)
@@ -115,9 +117,10 @@ public class GameManager : MonoBehaviourPun
     {
         Debug.Log("Entered InGame state. Starting 3-second countdown...");
         Lives = initialLives;
+        currentScore = 0;
         yield return new WaitForSeconds(3f);
         if(PhotonNetwork.IsMasterClient)
-            targetSpawner.EnableSpawn(OnTargetMiss);
+            targetSpawner.EnableSpawn(OnTargetHit, OnTargetMiss);
         ScreenManager.Instance.Show<GameScreen>(new GameScreenController());
         Debug.Log("Players can now play!");
     }
@@ -126,6 +129,11 @@ public class GameManager : MonoBehaviourPun
     {
         LoseLife();
         photonView.RPC(nameof(RPCLoseLife), RpcTarget.Others);
+    }
+
+    private void OnTargetHit(float score)
+    {
+        currentScore += score;
     }
 
     [PunRPC]

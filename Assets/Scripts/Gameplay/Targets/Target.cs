@@ -11,7 +11,9 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
 
-    private Action onMiss;
+    private Action OnMiss;
+    private Action<float> OnTargetHit;
+    private TargetData targetData;
 
     private void Awake()
     {
@@ -34,11 +36,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         if (p.y < -12f || p.y > 12f || p.x < -10f || p.x > 12f)
         {
             gameObject.SetActive(false);
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                onMiss?.Invoke();
-            }
+            OnMiss?.Invoke();
         }
     }
 
@@ -56,26 +54,33 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         ExecuteHit(info);
     }
 
-    [PunRPC]
-    public void RPCDeactivate()
-    {
-        gameObject.SetActive(false);
-    }
-
     private void ExecuteHit(HitInfo info)
     {
         IsCutted = true;
         SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
-
+        float score = CalculateScore(info);
+        OnTargetHit.Invoke(score);
         OnHit(info);
     }
 
-    public void Setup(TargetData data, Action onMiss)
+    private float CalculateScore(HitInfo info)
+    {
+        Vector2 center = (Vector2)transform.position;
+        Vector2 entry = info.EntryPoint;
+        float distance = Vector2.Distance(center, entry);
+        float maxDistance = spriteRenderer.bounds.extents.magnitude;
+        float normalized = Mathf.Clamp01(distance / maxDistance);
+        float score = Mathf.Lerp(targetData.MaxScore, targetData.MinScore, normalized);
+        
+        return score;
+    }
+
+    public void Setup(TargetData data, Action<float> onHit, Action onMiss)
     {
         ExecuteSetup(data);
-        this.onMiss = onMiss;
-        
+        OnMiss = onMiss;
+        OnTargetHit = onHit;
         if (photonView.IsMine)
             rigidbody2D.velocity = data.LaunchDirection * data.Speed;
 
@@ -84,15 +89,18 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    protected void RPCSetup(float size, float hp, float speed, string spriteKey, Vector2 launchDirection, Vector3 startPosition)
+    protected void RPCSetup(float size, float hp, float speed, string spriteKey,
+        Vector2 launchDirection, Vector3 startPosition, float minScore, float maxScore)
     {
         transform.position = startPosition;
-        TargetData data = new TargetData(size, hp, speed, startPosition, launchDirection, spriteKey);
+        TargetData data = new TargetData(size, hp, speed, startPosition,
+            launchDirection, spriteKey, minScore, maxScore);
         ExecuteSetup(data);
     }
 
     private void ExecuteSetup(TargetData data)
     {
+        targetData = data;
         IsCutted = false;
         gameObject.SetActive(true);
         OnSetup(data);

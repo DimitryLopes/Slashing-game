@@ -20,16 +20,18 @@ public class TargetSpawner : MonoBehaviour
     private float spawnTimer;
     private bool canSpawn;
 
-    private Action onTargetMissed;
+    private Action OnTargetMissed;
+    private Action<float> OnTargetHit;
 
     private void Awake()
     {
         FillDictionary();
     }
 
-    public void EnableSpawn(Action onTargetMiss)
+    public void EnableSpawn(Action<float> onTargetHit, Action onTargetMiss)
     {
-        onTargetMissed = onTargetMiss;
+        OnTargetHit = onTargetHit;
+        OnTargetMissed = onTargetMiss;
         currentDifficultyData = new DifficultyData(baseDifficultyData);
         spawnTimer = 0f;
         difficultyTimer = 0f;
@@ -97,8 +99,8 @@ public class TargetSpawner : MonoBehaviour
                 Vector2 launchDirection = spawnPoint.GetLaunchDirection();
 
                 TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, TargetType.Default.ToString());
-                targetComponent.Setup(targetData, onTargetMissed);
+                    launchDirection, TargetType.Default.ToString(), defaultTemplate.minScore, defaultTemplate.maxScore);
+                targetComponent.Setup(targetData, OnTargetHit, OnTargetMissed);
             }
         }
         else
@@ -143,4 +145,6 @@ public struct TargetTemplate
 {
     public TargetType type;
     public Target target;
+    public float minScore;
+    public float maxScore;
 }
