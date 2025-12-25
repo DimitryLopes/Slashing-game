@@ -120,7 +120,8 @@ public class GameManager : MonoBehaviourPun
         currentScore = 0;
         yield return new WaitForSeconds(3f);
         if(PhotonNetwork.IsMasterClient)
-            targetSpawner.EnableSpawn(OnTargetHit, OnTargetMiss);
+            targetSpawner.EnableSpawn(OnTargetHit, OnTargetMiss,
+                OnPlayerSpecificTargetHit, OnBombHit);
         ScreenManager.Instance.Show<GameScreen>(new GameScreenController());
         Debug.Log("Players can now play!");
     }
@@ -134,6 +135,18 @@ public class GameManager : MonoBehaviourPun
     private void OnTargetHit(float score)
     {
         currentScore += score;
+    }
+
+    private void OnPlayerSpecificTargetHit(HitInfo info, byte player, float score)
+    {
+        if(info.Player == player) { OnTargetHit(score); }
+        else { OnTargetMiss(); }
+    }
+
+    private void OnBombHit(float purposeless)
+    {
+        LoseLife();
+        photonView.RPC(nameof(RPCLoseLife), RpcTarget.Others);
     }
 
     [PunRPC]

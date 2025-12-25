@@ -22,16 +22,22 @@ public class TargetSpawner : MonoBehaviour
 
     private Action OnTargetMissed;
     private Action<float> OnTargetHit;
+    private Action<HitInfo, byte, float> OnPlayerSpecificTargetHit;
+    private Action<float> OnBombHit;
+
 
     private void Awake()
     {
         FillDictionary();
     }
 
-    public void EnableSpawn(Action<float> onTargetHit, Action onTargetMiss)
+    public void EnableSpawn(Action<float> onTargetHit, Action onTargetMiss,
+        Action<HitInfo,byte,float> onPlayerSpecificTargetHit, Action<float> onBombHit)
     {
         OnTargetHit = onTargetHit;
         OnTargetMissed = onTargetMiss;
+        OnPlayerSpecificTargetHit = onPlayerSpecificTargetHit;
+        OnBombHit = onBombHit;
         currentDifficultyData = new DifficultyData(baseDifficultyData);
         spawnTimer = 0f;
         difficultyTimer = 0f;
@@ -68,14 +74,37 @@ public class TargetSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!canSpawn) return;
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            SpawnTarget(TargetType.Default, OnTargetHit, OnTargetMissed);
+        }
+
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            SpawnTarget(TargetType.Explosive, OnBombHit, OnTargetMissed);
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            SpawnPlayerTarget(TargetType.SpecificPlayer, OnPlayerSpecificTargetHit, OnTargetMissed, 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SpawnPlayerTarget(TargetType.SpecificPlayer, OnPlayerSpecificTargetHit, OnTargetMissed, 2);
+        }
+
+
+
+        if (true) return; //!can spawn
 
         spawnTimer += Time.deltaTime;
         difficultyTimer += Time.deltaTime;
         if (spawnTimer >= currentDifficultyData.TargetSpawnInterval)
         {
             spawnTimer = 0f;
-            SpawnDefaultTarget();
+            
+            SpawnTarget(TargetType.Default, OnTargetHit, OnTargetMissed);
         }
 
         if (difficultyTimer < currentDifficultyData.SpawnIntervalDecreaseRate) return;
@@ -85,29 +114,49 @@ public class TargetSpawner : MonoBehaviour
             currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
     }
 
-    private void SpawnDefaultTarget()
+    private void SpawnTarget(TargetType type, Action<float> onHit, Action onMiss)
     {
-        TargetTemplate defaultTemplate = targetDatabase[TargetType.Default];
+        TargetTemplate template = targetDatabase[type];
 
-        if (defaultTemplate.target != null)
+        if (template.target != null)
         {
-            DefaultTarget targetComponent = GetAvailableTarget<DefaultTarget>(TargetType.Default);
-
+            Target targetComponent = GetAvailableTarget<Target>(type);
             if (targetComponent != null)
             {
                 var spawnPoint = spawnPoints.GetRandom();
                 Vector2 launchDirection = spawnPoint.GetLaunchDirection();
-
                 TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, TargetType.Default.ToString(), defaultTemplate.minScore, defaultTemplate.maxScore);
-                targetComponent.Setup(targetData, OnTargetHit, OnTargetMissed);
+                    launchDirection, type.ToString(), template.minScore, template.maxScore);
+                targetComponent.Setup(targetData, onHit, onMiss);
             }
         }
         else
         {
-            Debug.LogError("DefaultTarget not found in the target database!");
+            Debug.LogError($"{type} not found in the target database!");
         }
     }
+
+    private void SpawnPlayerTarget(TargetType type, Action<HitInfo, byte, float> onHit, Action onMiss, byte player)
+    {
+        TargetTemplate template = targetDatabase[type];
+        if (template.target != null)
+        {
+            PlayerSpecificTarget targetComponent = GetAvailableTarget<PlayerSpecificTarget>(type);
+            if (targetComponent != null)
+            {
+                var spawnPoint = spawnPoints.GetRandom();
+                Vector2 launchDirection = spawnPoint.GetLaunchDirection();
+                TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
+                    launchDirection, type.ToString(), template.minScore, template.maxScore);
+                targetComponent.Setup(targetData, player, onHit, onMiss);
+            }
+        }
+        else
+        {
+            Debug.LogError($"{type} not found in the target database!");
+        }
+    }
+
 
     private T GetAvailableTarget<T>(TargetType targetType) where T : Target
     {

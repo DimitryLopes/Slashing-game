@@ -11,8 +11,8 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
 
-    private Action OnMiss;
-    private Action<float> OnTargetHit;
+    protected Action OnTargetMiss;
+    protected Action<float> OnTargetHit;
     private TargetData targetData;
 
     private void Awake()
@@ -36,12 +36,14 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         if (p.y < -12f || p.y > 12f || p.x < -10f || p.x > 12f)
         {
             gameObject.SetActive(false);
-            OnMiss?.Invoke();
+            OnMiss();
         }
     }
 
     public void Hit(HitInfo info)
     {
+        if (IsCutted) return;
+
         ExecuteHit(info);
         photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
     }
@@ -54,17 +56,17 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         ExecuteHit(info);
     }
 
-    private void ExecuteHit(HitInfo info)
+    protected virtual void ExecuteHit(HitInfo info)
     {
         IsCutted = true;
         SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
         float score = CalculateScore(info);
-        OnTargetHit.Invoke(score);
+        OnTargetHit?.Invoke(score);
         OnHit(info);
     }
 
-    private float CalculateScore(HitInfo info)
+    protected float CalculateScore(HitInfo info)
     {
         Vector2 center = (Vector2)transform.position;
         Vector2 entry = info.EntryPoint;
@@ -79,7 +81,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     public void Setup(TargetData data, Action<float> onHit, Action onMiss)
     {
         ExecuteSetup(data);
-        OnMiss = onMiss;
+        OnTargetMiss = onMiss;
         OnTargetHit = onHit;
         if (photonView.IsMine)
             rigidbody2D.velocity = data.LaunchDirection * data.Speed;
@@ -103,7 +105,10 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         targetData = data;
         IsCutted = false;
         gameObject.SetActive(true);
-        OnSetup(data);
+
+        spriteRenderer.sprite = AssetService.GetTargetSprite(data.SpriteKey);
+        transform.position = data.StartPosition;
+        transform.localScale = Vector3.one * data.Size;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -118,7 +123,11 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public abstract void OnHit(HitInfo hitInfo);
-
-    public abstract void OnSetup(TargetData data);
+    protected virtual void OnMiss()
+    {
+        OnTargetMiss?.Invoke();
+    }
+    
+    //will be used for sound effects
+    protected abstract void OnHit(HitInfo hitInfo);
 }

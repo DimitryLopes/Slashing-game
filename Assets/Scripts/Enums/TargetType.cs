@@ -5,8 +5,7 @@ using UnityEngine;
 public enum TargetType
 {
     Default,
-    Only_P1,
-    Only_P2,
+    SpecificPlayer,
     Explosive,
     Boss,
     Upgrade_Bonus_Points,
