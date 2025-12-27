@@ -87,7 +87,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
             rigidbody2D.velocity = data.LaunchDirection * data.Speed;
 
         photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
-            data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition);
+            data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition, data.MinScore, data.MaxScore);
     }
 
     [PunRPC]

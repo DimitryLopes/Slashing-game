@@ -10,13 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 4013923030206001978}
   - component: {fileID: 7145388236567893570}
-  - component: {fileID: 6039017748327409157}
   - component: {fileID: 5689967062818151743}
+  - component: {fileID: -1277081395633525082}
   - component: {fileID: 1436950413352502231}
   - component: {fileID: 2198529033351889283}
   - component: {fileID: 3167823387921638792}
   m_Layer: 0
-  m_Name: Target_Default
+  m_Name: Target_SpecificPlayer
   m_TagString: Target
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -89,20 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6039017748327409157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128434655726102585}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 673e27d783aa626488877790b4b21084, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 7145388236567893570}
-  rigidbody2D: {fileID: 5689967062818151743}
 --- !u!50 &5689967062818151743
 Rigidbody2D:
   serializedVersion: 4
@@ -130,6 +116,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-1277081395633525082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2128434655726102585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52a35be4b52e7bb459e5d31d11c392cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 7145388236567893570}
+  rigidbody2D: {fileID: 5689967062818151743}
 --- !u!58 &1436950413352502231
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -184,7 +184,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 6039017748327409157}
+  - {fileID: -1277081395633525082}
   - {fileID: 3167823387921638792}
   sceneViewId: 0
   InstantiationId: 0

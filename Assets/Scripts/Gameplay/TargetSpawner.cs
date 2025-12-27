@@ -81,7 +81,7 @@ public class TargetSpawner : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.W))
         {
-            SpawnTarget(TargetType.Explosive, OnBombHit, OnTargetMissed);
+            SpawnTarget(TargetType.Explosive, OnBombHit, null);
         }
 
         if(Input.GetKeyDown(KeyCode.E))

@@ -1,14 +1,17 @@
+using Photon.Pun;
 using System;
+using UnityEngine;
 
 public class PlayerSpecificTarget : Target
 {
     private new Action<HitInfo, byte, float> OnTargetHit;
     private byte player;
+    
     protected override void OnHit(HitInfo hitInfo)
     {
-        throw new System.NotImplementedException();
     }
 
+    [PunRPC]
     protected override void ExecuteHit(HitInfo info)
     {
         IsCutted = true;
@@ -21,9 +24,16 @@ public class PlayerSpecificTarget : Target
 
     public void Setup(TargetData data, byte targetPlayer, Action<HitInfo, byte, float> onHit, Action onMiss)
     {
-        player = targetPlayer;
-        OnTargetHit = onHit;
+        photonView.RPC(nameof(RPCSpecialSetup), RpcTarget.All, targetPlayer, onHit);
         Setup(data, null, onMiss);
     }
 
+    [PunRPC]
+    private void RPCSpecialSetup(byte targetPlayer, Action<HitInfo, byte, float> onHit)
+    {
+        bool isTargetForLocalPlayer = targetPlayer == Photon.Pun.PhotonNetwork.LocalPlayer.ActorNumber;
+        spriteRenderer.color = isTargetForLocalPlayer ? Color.green : Color.red;
+        player = targetPlayer;
+        OnTargetHit = onHit;
+    }
 }
