@@ -10,6 +10,7 @@ public struct TargetData
     private string spriteKey;
     private float minScore;
     private float maxScore;
+    private TargetType type;
 
     public float Size => size;
     public float Health => health;
@@ -19,11 +20,12 @@ public struct TargetData
     public Vector2 LaunchDirection => launchDirection;
     public float MinScore => minScore;
     public float MaxScore => maxScore;
+    public TargetType Type => type;
 
 
     public TargetData(float size, float health, float speed,
         Vector3 start_position, Vector2 launchDirection, string spriteKey,
-        float minScore, float maxScore)
+        float minScore, float maxScore, TargetType type)
     {
         this.size = size;
         this.health = health;
@@ -33,5 +35,6 @@ public struct TargetData
         this.spriteKey = spriteKey;
         this.minScore = minScore;
         this.maxScore = maxScore;
+        this.type = type;
     }
 }

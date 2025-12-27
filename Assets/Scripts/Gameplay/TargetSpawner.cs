@@ -20,24 +20,14 @@ public class TargetSpawner : MonoBehaviour
     private float spawnTimer;
     private bool canSpawn;
 
-    private Action OnTargetMissed;
-    private Action<float> OnTargetHit;
-    private Action<HitInfo, byte, float> OnPlayerSpecificTargetHit;
-    private Action<float> OnBombHit;
-
 
     private void Awake()
     {
         FillDictionary();
     }
 
-    public void EnableSpawn(Action<float> onTargetHit, Action onTargetMiss,
-        Action<HitInfo,byte,float> onPlayerSpecificTargetHit, Action<float> onBombHit)
+    public void EnableSpawn()
     {
-        OnTargetHit = onTargetHit;
-        OnTargetMissed = onTargetMiss;
-        OnPlayerSpecificTargetHit = onPlayerSpecificTargetHit;
-        OnBombHit = onBombHit;
         currentDifficultyData = new DifficultyData(baseDifficultyData);
         spawnTimer = 0f;
         difficultyTimer = 0f;
@@ -76,22 +66,22 @@ public class TargetSpawner : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Q))
         {
-            SpawnTarget(TargetType.Default, OnTargetHit, OnTargetMissed);
+            SpawnTarget(TargetType.Default);
         }
 
         if(Input.GetKeyDown(KeyCode.W))
         {
-            SpawnTarget(TargetType.Explosive, OnBombHit, null);
+            SpawnTarget(TargetType.Explosive);
         }
 
         if(Input.GetKeyDown(KeyCode.E))
         {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, OnPlayerSpecificTargetHit, OnTargetMissed, 1);
+            SpawnPlayerTarget(TargetType.SpecificPlayer, 1);
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, OnPlayerSpecificTargetHit, OnTargetMissed, 2);
+            SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
         }
 
 
@@ -104,7 +94,7 @@ public class TargetSpawner : MonoBehaviour
         {
             spawnTimer = 0f;
             
-            SpawnTarget(TargetType.Default, OnTargetHit, OnTargetMissed);
+            SpawnTarget(TargetType.Default);
         }
 
         if (difficultyTimer < currentDifficultyData.SpawnIntervalDecreaseRate) return;
@@ -114,7 +104,7 @@ public class TargetSpawner : MonoBehaviour
             currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
     }
 
-    private void SpawnTarget(TargetType type, Action<float> onHit, Action onMiss)
+    private void SpawnTarget(TargetType type)
     {
         TargetTemplate template = targetDatabase[type];
 
@@ -126,8 +116,8 @@ public class TargetSpawner : MonoBehaviour
                 var spawnPoint = spawnPoints.GetRandom();
                 Vector2 launchDirection = spawnPoint.GetLaunchDirection();
                 TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, type.ToString(), template.minScore, template.maxScore);
-                targetComponent.Setup(targetData, onHit, onMiss);
+                    launchDirection, type.ToString(), template.minScore, template.maxScore, type);
+                targetComponent.Setup(targetData);
             }
         }
         else
@@ -136,7 +126,7 @@ public class TargetSpawner : MonoBehaviour
         }
     }
 
-    private void SpawnPlayerTarget(TargetType type, Action<HitInfo, byte, float> onHit, Action onMiss, byte player)
+    private void SpawnPlayerTarget(TargetType type, byte player)
     {
         TargetTemplate template = targetDatabase[type];
         if (template.target != null)
@@ -147,8 +137,8 @@ public class TargetSpawner : MonoBehaviour
                 var spawnPoint = spawnPoints.GetRandom();
                 Vector2 launchDirection = spawnPoint.GetLaunchDirection();
                 TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, type.ToString(), template.minScore, template.maxScore);
-                targetComponent.Setup(targetData, player, onHit, onMiss);
+                    launchDirection, type.ToString(), template.minScore, template.maxScore, type);
+                targetComponent.Setup(targetData, player);
             }
         }
         else

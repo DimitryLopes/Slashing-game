@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviourPun
     private void Start()
     {
         SceneManager.sceneLoaded += ChangeStateToInGame;
+        EventManager.OnTargetHit.AddListener(OnTargetHit);
+        EventManager.OnTargetMiss.AddListener(OnTargetMiss);
         ChangeState(GameState.Menu);
     }
 
@@ -120,33 +122,39 @@ public class GameManager : MonoBehaviourPun
         currentScore = 0;
         yield return new WaitForSeconds(3f);
         if(PhotonNetwork.IsMasterClient)
-            targetSpawner.EnableSpawn(OnTargetHit, OnTargetMiss,
-                OnPlayerSpecificTargetHit, OnBombHit);
-        ScreenManager.Instance.Show<GameScreen>(new GameScreenController());
+            targetSpawner.EnableSpawn();
+        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
         Debug.Log("Players can now play!");
     }
     
-    private void OnTargetMiss()
+    private void OnTargetMiss(Target target)
     {
-        LoseLife();
-        photonView.RPC(nameof(RPCLoseLife), RpcTarget.Others);
+        switch (target.Data.Type)
+        {
+            case TargetType.Explosive:
+                return;
+        }
+        photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
     }
 
-    private void OnTargetHit(float score)
+    private void OnTargetHit(Target target, HitInfo info, float score)
     {
+        switch (target.Data.Type)
+        {
+            case TargetType.Explosive:
+                photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
+                return;
+            case TargetType.SpecificPlayer:
+                var specificTarget = target as PlayerSpecificTarget;
+                if (info.Player != specificTarget.Player)
+                {
+                    photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
+                    return;
+                }
+                break;
+
+        }
         currentScore += score;
-    }
-
-    private void OnPlayerSpecificTargetHit(HitInfo info, byte player, float score)
-    {
-        if(info.Player == player) { OnTargetHit(score); }
-        else { OnTargetMiss(); }
-    }
-
-    private void OnBombHit(float purposeless)
-    {
-        LoseLife();
-        photonView.RPC(nameof(RPCLoseLife), RpcTarget.Others);
     }
 
     [PunRPC]

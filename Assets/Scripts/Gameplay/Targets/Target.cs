@@ -11,9 +11,9 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     [SerializeField]
     protected Rigidbody2D rigidbody2D;
 
-    protected Action OnTargetMiss;
-    protected Action<float> OnTargetHit;
     private TargetData targetData;
+
+    public TargetData Data => targetData;
 
     private void Awake()
     {
@@ -45,6 +45,8 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         if (IsCutted) return;
 
         ExecuteHit(info);
+        float score = CalculateScore(info);
+        EventManager.OnTargetHit.Invoke(this, info, score);
         photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
     }
 
@@ -61,8 +63,6 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         IsCutted = true;
         SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
-        float score = CalculateScore(info);
-        OnTargetHit?.Invoke(score);
         OnHit(info);
     }
 
@@ -78,25 +78,25 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         return score;
     }
 
-    public void Setup(TargetData data, Action<float> onHit, Action onMiss)
+    public void Setup(TargetData data)
     {
         ExecuteSetup(data);
-        OnTargetMiss = onMiss;
-        OnTargetHit = onHit;
         if (photonView.IsMine)
             rigidbody2D.velocity = data.LaunchDirection * data.Speed;
 
         photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
-            data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition, data.MinScore, data.MaxScore);
+            data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition, data.MinScore,
+            data.MaxScore, data.Type);
     }
 
     [PunRPC]
     protected void RPCSetup(float size, float hp, float speed, string spriteKey,
-        Vector2 launchDirection, Vector3 startPosition, float minScore, float maxScore)
+        Vector2 launchDirection, Vector3 startPosition, float minScore, float maxScore,
+        TargetType targetType)
     {
         transform.position = startPosition;
         TargetData data = new TargetData(size, hp, speed, startPosition,
-            launchDirection, spriteKey, minScore, maxScore);
+            launchDirection, spriteKey, minScore, maxScore, targetType);
         ExecuteSetup(data);
     }
 
@@ -125,7 +125,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     protected virtual void OnMiss()
     {
-        OnTargetMiss?.Invoke();
+        EventManager.OnTargetMiss.Invoke(this);
     }
     
     //will be used for sound effects

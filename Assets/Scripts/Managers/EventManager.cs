@@ -22,7 +22,10 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<IScreen> OnScreenAfterShowEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeHideEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeShowEvent = new UnityEvent<IScreen>();
+    
     public static UnityEvent<int> OnPlayerDamaged = new UnityEvent<int>();
+    public static UnityEvent<Target, HitInfo, float> OnTargetHit = new UnityEvent<Target, HitInfo, float>();
+    public static UnityEvent<Target> OnTargetMiss = new UnityEvent<Target>();
 
     public static Action OnConnectedToMasterEvent;
     public static Action<List<RoomInfo>> OnRoomListUpdateEvent;

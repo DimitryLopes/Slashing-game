@@ -1,7 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class GameScreenController : ScreenController
 {
+    public readonly int PlayerMaxLives;
+
+    public GameScreenController(int playerMaxLives)
+    {
+        PlayerMaxLives = playerMaxLives;
+    }
+
 }
