@@ -24,6 +24,8 @@ Shader "Unlit/Slicer"
             #include "UnityCG.cginc"
 
             sampler2D _MainTex;
+            float4 _MainTex_ST;
+
             float4 _CutPoint;
             float4 _CutNormal;
             float _Side;
@@ -37,26 +39,23 @@ Shader "Unlit/Slicer"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
-                float3 worldPos : TEXCOORD1;
+                float3 localPos : TEXCOORD1;
+                float4 pos : SV_POSITION;
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.localPos = v.vertex.xyz; // 🔑 LOCAL space
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float side =
-                    dot(i.worldPos.xy - _CutPoint.xy, _CutNormal.xy);
-
-                if (side * _Side < 0)
-                    discard;
+                float side = dot(i.localPos.xy - _CutPoint.xy, _CutNormal.xy);
+                clip(side * _Side);
 
                 return tex2D(_MainTex, i.uv);
             }
