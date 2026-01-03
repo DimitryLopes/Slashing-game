@@ -42,16 +42,6 @@ public class SpriteCutter : MonoBehaviour
             directions.Add(new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)));
         }
 
-
-        Texture2D originalTexture = sprite.texture;
-        Rect rect = sprite.rect;
-        Color[] originalPixels = originalTexture.GetPixels(
-            (int)rect.x,
-            (int)rect.y,
-            (int)rect.width,
-            (int)rect.height
-        );
-
         for (int i = 0; i < sliceCount; i++)
         {
             Vector2 dirA = directions[i];
@@ -82,9 +72,16 @@ public class SpriteCutter : MonoBehaviour
 
     private Sprite SliceSpriteSector(Sprite sprite, Transform worldPosition, Vector2 center, Vector2 pA, Vector2 pB)
     {
+        Texture2D originalTexture = sprite.texture;
         Rect rect = sprite.rect;
         Texture2D fragmentTexture = new Texture2D((int)rect.width, (int)rect.height);
 
+        Color[] originalPixels = originalTexture.GetPixels(
+            (int)rect.x,
+            (int)rect.y,
+            (int)rect.width,
+            (int)rect.height
+        );
 
         Vector2 texCenter = new Vector2(sprite.pivot.x, sprite.pivot.y);
 

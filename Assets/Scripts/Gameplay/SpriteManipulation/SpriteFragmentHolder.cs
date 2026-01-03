@@ -4,13 +4,15 @@ using UnityEngine;
 public class SpriteFragmentHolder : Activateable
 {
     [SerializeField]
-    private SpriteRenderer renderer;
+    private new SpriteRenderer renderer;
     [SerializeField]
     private Rigidbody2D rb;
 
     private const float DisableDelay = 1f;
 
     private float disableTimer = 0f;
+
+    public SpriteRenderer Renderer => renderer;
 
     public void SetSprite(Sprite sprite)
     {

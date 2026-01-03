@@ -62,7 +62,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     protected virtual void ExecuteHit(HitInfo info)
     {
-        SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
+        SpriteSlicer.Instance.Slice(spriteRenderer, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
         OnHit(info);
     }

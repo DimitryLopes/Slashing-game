@@ -190,6 +190,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &589935716
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 589935718}
+  - component: {fileID: 589935717}
+  m_Layer: 0
+  m_Name: SpriteCutter (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &589935717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589935716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96208d478b6e3e945b1ff038c1447ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sliceMaterial: {fileID: 2100000, guid: a9e3a55d6ae3d944e8b08b268ffb85c1, type: 2}
+  holderPrefab: {fileID: 1192789886539407856, guid: 55d52caade0a9ab43b3a124f2f0f1f91, type: 3}
+  holders: []
+--- !u!4 &589935718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589935716}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.31173417, y: 2.7064931, z: -0.033456806}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &650633333
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,4 +430,5 @@ SceneRoots:
   - {fileID: 1493702964}
   - {fileID: 650633335}
   - {fileID: 1513761320}
+  - {fileID: 589935718}
   - {fileID: 587129123}
