@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 public class SpriteCutter : MonoBehaviour
@@ -28,6 +29,46 @@ public class SpriteCutter : MonoBehaviour
         }
     }
 
+    public void CutSprite(SpriteRenderer renderer, Transform worldPosition, int sliceCount)
+    {
+        Sprite sprite = renderer.sprite;
+        Vector2 center = renderer.bounds.center;
+
+        List<Vector2> directions = new List<Vector2>();
+        for (int i = 0; i < sliceCount; i++)
+        {
+            float angle = (360f / sliceCount) * i;
+            float rad = angle * Mathf.Deg2Rad;
+            directions.Add(new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)));
+        }
+
+
+        Texture2D originalTexture = sprite.texture;
+        Rect rect = sprite.rect;
+        Color[] originalPixels = originalTexture.GetPixels(
+            (int)rect.x,
+            (int)rect.y,
+            (int)rect.width,
+            (int)rect.height
+        );
+
+        for (int i = 0; i < sliceCount; i++)
+        {
+            Vector2 dirA = directions[i];
+            Vector2 dirB = directions[(i + 1) % sliceCount];
+
+            float maxExtent = renderer.bounds.extents.magnitude * 2f;
+            Vector2 pA = center + dirA * maxExtent;
+            Vector2 pB = center + dirB * maxExtent;
+
+            Vector2 cutDir = (pB - pA).normalized;
+            Vector2 cutNormal = new Vector2(-cutDir.y, cutDir.x);
+
+            Sprite sectorFragment = SliceSpriteSector(sprite, worldPosition, center, pA, pB);
+            SpawnFragment(sectorFragment, worldPosition.position, cutNormal, cutDir);
+        }
+    }
+
     public void CutSprite(Sprite sprite, Transform worldPosition, Vector2 startPoint, Vector2 endPoint)
     {
         Sprite[] slicedSprites = SliceSprite(sprite, worldPosition, startPoint, endPoint);
@@ -37,6 +78,52 @@ public class SpriteCutter : MonoBehaviour
 
         SpawnFragment(slicedSprites[0], worldPosition.position, cutNormal, cutDir);
         SpawnFragment(slicedSprites[1], worldPosition.position, -cutNormal, cutDir);
+    }
+
+    private Sprite SliceSpriteSector(Sprite sprite, Transform worldPosition, Vector2 center, Vector2 pA, Vector2 pB)
+    {
+        Rect rect = sprite.rect;
+        Texture2D fragmentTexture = new Texture2D((int)rect.width, (int)rect.height);
+
+
+        Vector2 texCenter = new Vector2(sprite.pivot.x, sprite.pivot.y);
+
+        for (int y = 0; y < rect.height; y++)
+        {
+            for (int x = 0; x < rect.width; x++)
+            {
+                Vector2 p = new Vector2(x, y);
+                Vector2 v = p - texCenter;
+
+                if (IsPointInSector(v, Vector2.zero, pA - center, pB - center))
+                {
+                    int index = x + y * (int)rect.width;
+                    fragmentTexture.SetPixel(x, y, originalPixels[index]);
+                }
+                else
+                {
+                    fragmentTexture.SetPixel(x, y, Color.clear);
+                }
+            }
+        }
+
+        fragmentTexture.Apply();
+        return Sprite.Create(fragmentTexture, new Rect(0, 0, fragmentTexture.width, fragmentTexture.height), sprite.pivot / rect.size, sprite.pixelsPerUnit);
+    }
+
+    private bool IsPointInSector(Vector2 point, Vector2 center, Vector2 a, Vector2 b)
+    {
+        float angleA = Mathf.Atan2(a.y, a.x);
+        float angleB = Mathf.Atan2(b.y, b.x);
+        float angleP = Mathf.Atan2(point.y, point.x);
+
+        float delta = Mathf.DeltaAngle(angleA * Mathf.Rad2Deg, angleB * Mathf.Rad2Deg);
+        if (delta < 0) delta += 360f;
+
+        float deltaP = Mathf.DeltaAngle(angleA * Mathf.Rad2Deg, angleP * Mathf.Rad2Deg);
+        if (deltaP < 0) deltaP += 360f;
+
+        return deltaP <= delta;
     }
 
     private SpriteFragmentHolder GetAvailableHolder()

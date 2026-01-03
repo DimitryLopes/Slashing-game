@@ -686,6 +686,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: targetTemplates.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: targetTemplates.Array.data[3].type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: targetTemplates.Array.data[3].target
+      value: 
+      objectReference: {fileID: 7700582168173456530, guid: 133edf1492b4ba348b0ed15f20a0fc6e, type: 3}
+    - target: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: targetTemplates.Array.data[3].maxScore
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: targetTemplates.Array.data[3].minScore
+      value: 250
+      objectReference: {fileID: 0}
     - target: {fileID: 7478015455357520483, guid: af549cc869fc18746833db8a054ea301, type: 3}
       propertyPath: m_Name
       value: TargetSpawner

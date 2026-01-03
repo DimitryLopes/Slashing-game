@@ -12,6 +12,8 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
     private Button lobbyScreenButton;
     [SerializeField]
     private Button mainMenuButton;
+    [SerializeField]
+    private Button replayButton;
 
     protected override void OnBeforeShow()
     {
@@ -20,6 +22,7 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
         roomScreenButton.onClick.AddListener(OnRoomScreenButtonClick);
         lobbyScreenButton.onClick.AddListener(OnLobbyScreenButtonClick);
         mainMenuButton.onClick.AddListener(OnMainMenuGameButtonClick);
+        replayButton.onClick.AddListener(OnPlayAgainButtonClicked);
     }
 
     private void OnRoomScreenButtonClick()
@@ -32,8 +35,13 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
 
     }
 
+    private void OnPlayAgainButtonClicked()
+    {
+        GameManager.Instance.ChangeState(GameState.InGame);
+    }
+
     private void OnMainMenuGameButtonClick()
     {
-
+        GameManager.Instance.ChangeState(GameState.Menu);
     }
 }

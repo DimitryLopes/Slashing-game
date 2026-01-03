@@ -84,6 +84,10 @@ public class TargetSpawner : MonoBehaviour
             SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
         }
 
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            SpawnTarget(TargetType.Boss);
+        }
 
 
         if (true) return; //!can spawn

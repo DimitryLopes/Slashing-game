@@ -9,6 +9,7 @@ public class Constants
     public static class Scenes
     {
         public const string GAME = "Game";
+        public const string MENU = "Menu";
     }
 
     public static class Tags

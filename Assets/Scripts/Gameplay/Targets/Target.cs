@@ -40,10 +40,11 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void Hit(HitInfo info)
+    public virtual void Hit(HitInfo info)
     {
         if (IsCutted) return;
 
+        IsCutted = true;
         ExecuteHit(info);
         float score = CalculateScore(info);
         EventManager.OnTargetHit.Invoke(this, info, score);
@@ -53,6 +54,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void RPCHit(byte player, Vector2 entryPoint, Vector2 exitPoint)
     {
+        IsCutted = true;
         var info = new HitInfo(entryPoint, player);
         info.ExitPoint = exitPoint;
         ExecuteHit(info);
@@ -60,7 +62,6 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     protected virtual void ExecuteHit(HitInfo info)
     {
-        IsCutted = true;
         SpriteCutter.Instance.CutSprite(spriteRenderer.sprite, transform, info.EntryPoint, info.ExitPoint);
         gameObject.SetActive(!IsCutted);
         OnHit(info);
@@ -105,7 +106,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         targetData = data;
         IsCutted = false;
         gameObject.SetActive(true);
-
+        OnSetup(data);
         spriteRenderer.sprite = AssetService.GetTargetSprite(data.SpriteKey);
         transform.position = data.StartPosition;
         transform.localScale = Vector3.one * data.Size;
@@ -130,4 +131,6 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     
     //will be used for sound effects
     protected abstract void OnHit(HitInfo hitInfo);
+
+    protected virtual void OnSetup(TargetData data) { }
 }

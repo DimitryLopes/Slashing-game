@@ -17,14 +17,6 @@ public class GameManager : MonoBehaviourPun
 
     public int Lives { get; private set; }
 
-    public enum GameState
-    {
-        Menu,
-        Lobby,
-        Room,
-        InGame,
-        EndGame
-    }
 
     private GameState currentState;
 
@@ -89,7 +81,7 @@ public class GameManager : MonoBehaviourPun
 
     private void HandleMenuState()
     {
-        Debug.Log("Entered Menu state.");
+        SceneManager.LoadScene(Constants.Scenes.MENU);
     }
 
     private void HandleLobbyState()
@@ -117,15 +109,13 @@ public class GameManager : MonoBehaviourPun
     #region InGame
     private IEnumerator HandleInGameState()
     {
-        Debug.Log("Entered InGame state. Starting 3-second countdown...");
         Lives = initialLives;
         currentScore = 0;
         yield return new WaitForSeconds(3f);
         if(PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
         ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
-        Debug.Log("Players can now play!");
-    }
+     }
     
     private void OnTargetMiss(Target target)
     {
@@ -179,4 +169,13 @@ public class GameManager : MonoBehaviourPun
         }
     }
     #endregion
+}
+
+public enum GameState
+{
+    Menu,
+    Lobby,
+    Room,
+    InGame,
+    EndGame
 }
