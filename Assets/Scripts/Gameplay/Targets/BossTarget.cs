@@ -5,7 +5,6 @@ public class BossTarget : Target
 {
     [SerializeField] private int maxHp = 50;
     [SerializeField] private float slowDownFactor = 0.1f;
-    [SerializeField] private int explosionFragments = 8;
     private bool isSlowed = false;
 
     private int hp;
@@ -17,7 +16,7 @@ public class BossTarget : Target
         if (hp == 0)
         {
             float score = Data.MinScore;
-            EventManager.OnTargetHit.Invoke(this, info, score);
+            EventManager.OnTargetHit.Invoke(this, info);
             IsCutted = true;
         }
             
@@ -41,8 +40,8 @@ public class BossTarget : Target
     {
         if (isSlowed) return;
 
-        rigidbody2D.velocity *= slowDownFactor;
-        rigidbody2D.gravityScale *= slowDownFactor;
+        rb.velocity *= slowDownFactor;
+        rb.gravityScale *= slowDownFactor;
         isSlowed = true;
     }
 

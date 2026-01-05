@@ -8,7 +8,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     [SerializeField]
     protected SpriteRenderer spriteRenderer;
     [SerializeField]
-    protected Rigidbody2D rigidbody2D;
+    protected Rigidbody2D rb;
 
     private TargetData targetData;
 
@@ -18,7 +18,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     {
         if (!photonView.IsMine)
         {
-            rigidbody2D.isKinematic = true;
+            rb.isKinematic = true;
         }
     }
 
@@ -44,25 +44,28 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         if (IsCutted) return;
 
         IsCutted = true;
+        float score = CalculateScore(info);
+        info.Score = score;
         ExecuteHit(info);
-        photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
+        photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint, info.Score);
     }
 
     [PunRPC]
-    public void RPCHit(byte player, Vector2 entryPoint, Vector2 exitPoint)
+    public void RPCHit(byte player, Vector2 entryPoint, Vector2 exitPoint, float score)
     {
         IsCutted = true;
         var info = new HitInfo(entryPoint, player);
         info.ExitPoint = exitPoint;
+        info.Score = score;
         ExecuteHit(info);
     }
 
     protected virtual void ExecuteHit(HitInfo info)
     {
         SpriteSlicer.Instance.Slice(spriteRenderer, info.EntryPoint, info.ExitPoint);
-        float score = CalculateScore(info);
-        EventManager.OnTargetHit.Invoke(this, info, score);
-        FloatingTextManager.Instance.ShowFloatingText($"+ {score}", transform.position);
+        
+        EventManager.OnTargetHit.Invoke(this, info);
+        FloatingTextManager.Instance.ShowFloatingText($"+ {info.Score}", transform.position);
         gameObject.SetActive(!IsCutted);
         OnHit(info);
     }
@@ -84,7 +87,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     {
         ExecuteSetup(data);
         if (photonView.IsMine)
-            rigidbody2D.velocity = data.LaunchDirection * data.Speed;
+            rb.velocity = data.LaunchDirection * data.Speed;
 
         photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
             data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition, data.MinScore,

@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 7145388236567893570}
-  rigidbody2D: {fileID: 5689967062818151743}
+  rb: {fileID: 5689967062818151743}
 --- !u!58 &1436950413352502231
 CircleCollider2D:
   m_ObjectHideFlags: 0

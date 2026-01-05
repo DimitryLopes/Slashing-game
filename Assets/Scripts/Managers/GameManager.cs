@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviourPun
         photonView.RPC(nameof(RPCLoseLife), RpcTarget.All);
     }
 
-    private void OnTargetHit(Target target, HitInfo info, float score)
+    private void OnTargetHit(Target target, HitInfo info)
     {
         switch (target.Data.Type)
         {
@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviourPun
                 break;
 
         }
-        currentScore += score;
+        currentScore += info.Score;
     }
 
     [PunRPC]

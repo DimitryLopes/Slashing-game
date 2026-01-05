@@ -102,7 +102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 7145388236567893570}
-  rigidbody2D: {fileID: 5689967062818151743}
+  rb: {fileID: 5689967062818151743}
 --- !u!50 &5689967062818151743
 Rigidbody2D:
   serializedVersion: 4
