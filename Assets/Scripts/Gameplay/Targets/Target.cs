@@ -1,6 +1,5 @@
 using UnityEngine;
 using Photon.Pun;
-using System;
 
 public abstract class Target : MonoBehaviourPun, IPunObservable
 {
@@ -46,8 +45,6 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
         IsCutted = true;
         ExecuteHit(info);
-        float score = CalculateScore(info);
-        EventManager.OnTargetHit.Invoke(this, info, score);
         photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
     }
 
@@ -63,6 +60,9 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     protected virtual void ExecuteHit(HitInfo info)
     {
         SpriteSlicer.Instance.Slice(spriteRenderer, info.EntryPoint, info.ExitPoint);
+        float score = CalculateScore(info);
+        EventManager.OnTargetHit.Invoke(this, info, score);
+        FloatingTextManager.Instance.ShowFloatingText($"+ {score}", transform.position);
         gameObject.SetActive(!IsCutted);
         OnHit(info);
     }
@@ -74,6 +74,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         float distance = Vector2.Distance(center, entry);
         float maxDistance = spriteRenderer.bounds.extents.magnitude;
         float normalized = Mathf.Clamp01(distance / maxDistance);
+        normalized.Truncate(1); 
         float score = Mathf.Lerp(targetData.MaxScore, targetData.MinScore, normalized);
         
         return score;
@@ -129,7 +130,6 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
         EventManager.OnTargetMiss.Invoke(this);
     }
     
-    //will be used for sound effects
     protected abstract void OnHit(HitInfo hitInfo);
 
     protected virtual void OnSetup(TargetData data) { }

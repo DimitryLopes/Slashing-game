@@ -32,7 +32,7 @@ public class BossTarget : Target
 
         if (hp == 0)
         {
-            Explode();
+            SpriteSlicer.Instance.Slice(spriteRenderer, info.EntryPoint, info.ExitPoint);
             gameObject.SetActive(false);
         }
     }
@@ -44,11 +44,6 @@ public class BossTarget : Target
         rigidbody2D.velocity *= slowDownFactor;
         rigidbody2D.gravityScale *= slowDownFactor;
         isSlowed = true;
-    }
-
-    private void Explode()
-    {
-        SpriteCutter.Instance.CutSprite(spriteRenderer, transform, 8);
     }
 
     protected override void OnSetup(TargetData data)

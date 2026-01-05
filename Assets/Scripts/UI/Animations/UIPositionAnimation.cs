@@ -19,16 +19,22 @@ public class UIPositionAnimation : UIAnimation
 
     protected override void DoAnimation(GameObject target)
     {
+        Vector3 endPos = endPosition;
         if (!startFromSetPosition)
         {
             startPosition =  rectTransform.anchoredPosition;
+            endPos = new Vector3(rectTransform.localPosition.x + endPosition.x,
+                rectTransform.localPosition.y + endPosition.y);
         }
 
         if (movementType == MovementType.Linear)
         {
             rectTransform.anchoredPosition = startPosition;
-            tween = LeanTween.move(rectTransform, endPosition, duration);
-            return;
+            if (!startFromSetPosition)
+                tween = target.LeanMoveLocal(endPos, duration);
+            else
+                tween = target.LeanMove(endPosition, duration);
+                return;
         }
 
         tween = LeanTween.value(0f, 1f, duration).setOnUpdate(ArchMovement);
