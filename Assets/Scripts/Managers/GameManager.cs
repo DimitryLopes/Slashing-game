@@ -145,6 +145,7 @@ public class GameManager : MonoBehaviourPun
 
         }
         currentScore += info.Score;
+        EventManager.OnScoreUpdated.Invoke(currentScore);
     }
 
     [PunRPC]

@@ -24,6 +24,7 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<IScreen> OnScreenBeforeShowEvent = new UnityEvent<IScreen>();
     
     public static UnityEvent<int> OnPlayerDamaged = new UnityEvent<int>();
+    public static UnityEvent<float> OnScoreUpdated = new UnityEvent<float>();
     public static UnityEvent<Target, HitInfo> OnTargetHit = new UnityEvent<Target, HitInfo>();
     public static UnityEvent<Target> OnTargetMiss = new UnityEvent<Target>();
 
