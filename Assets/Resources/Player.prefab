@@ -48,6 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bladePrefab: {fileID: 4615245755819081300, guid: cd60a2a43edfa77498857054a1034f06, type: 3}
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!114 &1803419478019308441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,5 +133,5 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 3

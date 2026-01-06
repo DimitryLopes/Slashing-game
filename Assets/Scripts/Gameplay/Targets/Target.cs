@@ -1,5 +1,6 @@
-using UnityEngine;
 using Photon.Pun;
+using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class Target : MonoBehaviourPun, IPunObservable
 {
@@ -13,6 +14,8 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     private TargetData targetData;
 
     public TargetData Data => targetData;
+
+    public float Size => spriteRenderer.bounds.extents.magnitude;
 
     private void Awake()
     {
@@ -72,22 +75,38 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
 
     protected float CalculateScore(HitInfo info)
     {
-        Vector2 center = (Vector2)transform.position;
-        Vector2 entry = info.EntryPoint;
-        float distance = Vector2.Distance(center, entry);
-        float maxDistance = spriteRenderer.bounds.extents.magnitude;
-        float normalized = Mathf.Clamp01(distance / maxDistance);
-        normalized.Truncate(1); 
+        Vector3 entry = info.EntryPoint;
+        Vector3 exit = info.ExitPoint;
+        Vector2 center = spriteRenderer.bounds.center;
+        Vector2 cutMid = (entry + exit) / 2f;
+        float distance = Vector2.Distance(center, cutMid);
+
+        gizmoList.Add(new DebugGizmo
+        {
+            entry = entry,
+            exit = exit,
+            mid = cutMid,
+            center = center,
+            expireTime = Time.time + 5f
+        });
+
+        float radius = Mathf.Min(
+            spriteRenderer.bounds.extents.x,
+            spriteRenderer.bounds.extents.y
+        );
+
+        float normalized = Mathf.Clamp01(distance / radius);
+
         float score = Mathf.Lerp(targetData.MaxScore, targetData.MinScore, normalized);
-        
-        return score;
+        score = Mathf.Floor(score);
+        return score; 
     }
 
     public void Setup(TargetData data)
     {
         ExecuteSetup(data);
-        if (photonView.IsMine)
-            rb.velocity = data.LaunchDirection * data.Speed;
+        if (photonView.IsMine) { }
+            //rb.velocity = data.LaunchDirection * data.Speed;
 
         photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
             data.Speed, data.SpriteKey, data.LaunchDirection, data.StartPosition, data.MinScore,
@@ -136,4 +155,41 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     protected abstract void OnHit(HitInfo hitInfo);
 
     protected virtual void OnSetup(TargetData data) { }
+
+    private struct DebugGizmo
+    {
+        public Vector3 entry;
+        public Vector3 exit;
+        public Vector3 mid;
+        public Vector3 center;
+        public float expireTime;
+    }
+
+    private List<DebugGizmo> gizmoList = new List<DebugGizmo>();
+
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (gizmoList == null) return;
+
+        float now = Application.isPlaying ? Time.time : 0f;
+        gizmoList.RemoveAll(g => g.expireTime < now);
+
+        foreach (var g in gizmoList)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(g.entry, 0.15f);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(g.exit, 0.15f);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(g.mid, 0.15f);
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(g.center, 0.15f);
+        }
+    }
+#endif
 }
