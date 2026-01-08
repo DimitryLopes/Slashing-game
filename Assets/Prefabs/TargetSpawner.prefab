@@ -1856,16 +1856,20 @@ MonoBehaviour:
   targetTemplates:
   - type: 0
     target: {fileID: 6039017748327409157, guid: 818e3a9bf482e384d9c0264ecd3c35b0, type: 3}
-    minScore: 10
-    maxScore: 20
+    minScore: 0
+    maxScore: 250
   - type: 1
     target: {fileID: -1277081395633525082, guid: 70f44161755bfdf4eb455f07004e0954, type: 3}
-    minScore: 10
-    maxScore: 20
+    minScore: 0
+    maxScore: 250
   - type: 2
     target: {fileID: 6594226165136572250, guid: b6cdccc7ec0087a43b9f5190bedb3679, type: 3}
     minScore: 0
     maxScore: 0
+  - type: 3
+    target: {fileID: 7700582168173456530, guid: 133edf1492b4ba348b0ed15f20a0fc6e, type: 3}
+    minScore: 250
+    maxScore: 2500
   baseDifficultyData:
     TargetSpawnInterval: 2
     SpawnIntervalDecreaseRate: 10
