@@ -33,7 +33,7 @@ public class UIPositionAnimation : UIAnimation
             if (!startFromSetPosition)
                 tween = target.LeanMoveLocal(endPos, duration);
             else
-                tween = target.LeanMove(endPosition, duration);
+                tween = target.LeanMoveLocal(endPosition, duration);
                 return;
         }
 

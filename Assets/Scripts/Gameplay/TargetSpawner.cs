@@ -64,6 +64,7 @@ public class TargetSpawner : MonoBehaviour
 
     private void Update()
     {
+        /*
         if(Input.GetKeyDown(KeyCode.Q))
         {
             SpawnTarget(TargetType.Default);
@@ -88,9 +89,9 @@ public class TargetSpawner : MonoBehaviour
         {
             SpawnTarget(TargetType.Boss);
         }
+        */
 
-
-        if (true) return; //!can spawn
+        if (!canSpawn) return;
 
         spawnTimer += Time.deltaTime;
         difficultyTimer += Time.deltaTime;

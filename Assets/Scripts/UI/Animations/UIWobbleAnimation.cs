@@ -15,7 +15,7 @@ public class UIWobbleAnimation : UIAnimation
     protected override void FirstShowSetup()
     {
         rectTransform = animationTarget.GetComponent<RectTransform>();
-        originalAnchoredPosition = rectTransform.localPosition;
+        originalAnchoredPosition = rectTransform.anchoredPosition;
     }
 
     protected override void DoAnimation(GameObject target)

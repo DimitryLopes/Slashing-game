@@ -22,19 +22,24 @@ public abstract class UIAnimation
     protected float startDelay = 0f;
     [SerializeReference] protected bool ignoreTimeScale = false;
 
+    [Header("Custom Target")]
+    [SerializeReference] protected bool useCustomTarget = false;
+    [SerializeReference] [ShowIf("useCustomTarget")] protected GameObject customAnimationTarget;
+    
     protected LTDescr tween;
     protected Action callback;
     protected GameObject animationTarget;
     private bool isPlaying;
+    private UIAnimationComponent componentReference;
 
     public GameObject AnimationTarget => animationTarget;
     public LTDescr Tween => tween;
     public bool IsPlaying => isPlaying;
     public int Priority => priority;
+    public UIAnimationComponent ComponentReference => componentReference;
 
     private bool isFirstPlayDone = false;
     private UIAnimationManager animationManager;
-
     public float Duration => duration;
 
 
@@ -52,13 +57,17 @@ public abstract class UIAnimation
     /// <param name="callback">Callback function on completion</param>
     public virtual void Animate(GameObject target, Action callback = null, bool debug = false)
     {
-        if (target == null)
+        if (target == null && customAnimationTarget == null)
         {
             Debug.LogError("Target GameObject is null! Animation cannot be performed.");
             return;
         }
 
-        animationTarget = target;
+        if (useCustomTarget)
+            animationTarget = customAnimationTarget;
+        else
+            animationTarget = target;
+
         this.callback = callback;
         // Call FirstPlay once, before the first time the animation runs
         if (!isFirstPlayDone)
@@ -74,7 +83,7 @@ public abstract class UIAnimation
         }
 
         // Start the actual animation
-        DoAnimation(target);
+        DoAnimation(animationTarget);
         if (!debug)
         {
             animationManager.AddAnimation(this);
@@ -115,6 +124,11 @@ public abstract class UIAnimation
     public void SetDynamicDelay(float delay)
     {
         startDelay = delay;
+    }
+
+    public void SetComponentReference(UIAnimationComponent component)
+    {
+        componentReference = component;
     }
 
     /// <summary>

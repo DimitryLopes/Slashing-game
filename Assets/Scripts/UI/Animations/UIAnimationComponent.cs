@@ -40,6 +40,15 @@ public class UIAnimationComponent : MonoBehaviour
     {
         if (!animationTarget)
             animationTarget = gameObject;
+
+        foreach(UIAnimation anim in inAnimations)
+        {
+            anim.SetComponentReference(this);
+        }
+        foreach (UIAnimation anim in outAnimations)
+        {
+            anim.SetComponentReference(this);
+        }
     }
 
     
@@ -101,7 +110,7 @@ public class UIAnimationComponent : MonoBehaviour
             var sortedAnimations = animations.OrderByDescending(a => a.Duration).ToList();
             for (int i = 1; i < animations.Count; i++)
             {
-                animations[i].Animate(animationTarget, debug: debug);
+                sortedAnimations[i].Animate(animationTarget, debug: debug);
             }
             sortedAnimations[0].Animate(animationTarget, onComplete, debug);
         }

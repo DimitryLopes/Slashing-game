@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class UIAnimationManager : MonoBehaviour
 {
-
     public static UIAnimationManager Instance;
 
     private void Awake()
@@ -15,59 +13,64 @@ public class UIAnimationManager : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
-    private List<UIAnimation> activeAnimations = new();
+    private Dictionary<GameObject, List<UIAnimation>> activeAnimations = new();
 
     /// <summary>
     /// Adds an animation to be managed by the manager.
     /// </summary>
     /// <param name="animation">The animation to be added.</param>
     public void AddAnimation(UIAnimation animation)
-    {
-        if (animation.AnimationTarget == null)
+    {        
+        if (activeAnimations.ContainsKey(animation.AnimationTarget))
         {
-            Debug.LogError("UIAnimationManager: Attempted to add an animation with no target.");
-            return;
-        }
+            List<UIAnimation> animationsOnTarget = activeAnimations[animation.AnimationTarget];
 
-        // Add the animation to the list
-        activeAnimations.Add(animation);
+            for(int i = 0; i < animationsOnTarget.Count;)
+            {
+                var existingAnimation = animationsOnTarget[i];
+                bool isHigherPriority = animation.Priority > existingAnimation.Priority;
+                bool isSameCoponent = animation.ComponentReference == existingAnimation.ComponentReference;
+                if (isHigherPriority && !isSameCoponent && existingAnimation.IsPlaying)
+                {
+                    // Cancel lower or equal priority animations
+                    LeanTween.cancel(existingAnimation.Tween.id, true);
+                    // Animation removes itself onComplete
+                }
+                else
+                {
+                    i++;
+                }
+            }
+            if (activeAnimations.ContainsKey(animation.AnimationTarget))
+            {
+                activeAnimations[animation.AnimationTarget].Add(animation);            
+            }
+            else // All animations were cancelled
+            {
+                activeAnimations.Add(animation.AnimationTarget, new List<UIAnimation>() { animation });
+            }
+        }
+        else
+        {
+            activeAnimations.Add(animation.AnimationTarget, new List<UIAnimation>() { animation });
+        }
     }
 
     public void RemoveAnimation(UIAnimation animation)
     {
-        if (animation.AnimationTarget == null)
-        {
-            Debug.LogError("UIAnimationManager: Attempted to remove an animation with no target.");
-            return;
-        }
+        if (!activeAnimations.ContainsKey(animation.AnimationTarget)) return;
 
-        if (!activeAnimations.Contains(animation)) return;
+        var animationsOnTarget = activeAnimations[animation.AnimationTarget];
+        animationsOnTarget.Remove(animation);
 
-        activeAnimations.Remove(animation);
+        if (animationsOnTarget.Count == 0)
+            activeAnimations.Remove(animation.AnimationTarget);
+        else
+            activeAnimations[animation.AnimationTarget] = animationsOnTarget;
 
         LeanTween.cancel(animation.Tween.id);
-    }
-
-    /// <summary>
-    /// Cancels a specific animation by LeanTween ID (tween.id)
-    /// </summary>
-    /// <param name="id">LeanTween ID</param>
-    public void Cancel(int id, int priority)
-    {
-        for (int i = 0; i < activeAnimations.Count; i++)
-        {
-
-            if (activeAnimations[i].Tween.id == id)
-            {
-                Cancel(activeAnimations[i], priority);
-                return;
-            }
-        }
-
-        Debug.LogWarning($"UIAnimationManager: No animation found with \n ID {id}");
     }
 
     /// <summary>
@@ -76,11 +79,21 @@ public class UIAnimationManager : MonoBehaviour
     /// <param name="target">The GameObject whose animations to cancel.</param>
     public void Cancel(GameObject target, int priority)
     {
-        if (target == null) return;
-
-        for (int i = 0; i < activeAnimations.Count; i++)
+        var animationsToCancel = new List<UIAnimation>();
+        if (activeAnimations.ContainsKey(target))
         {
-            Cancel(activeAnimations[i], priority);
+            foreach (var animation in activeAnimations[target])
+            {
+                if (animation.IsPlaying && priority >= animation.Priority)
+                {
+                    animationsToCancel.Add(animation);
+                }
+            }
+            foreach (var animation in animationsToCancel)
+            {
+                LeanTween.cancel(animation.Tween.id, true);
+                //Animation removes itself onComplete
+            }
         }
     }
 
@@ -91,17 +104,5 @@ public class UIAnimationManager : MonoBehaviour
             LeanTween.cancel(animation.Tween.id, true);
             //Animation removes itself onComplete
         }
-    }
-
-    public void CancelAll()
-    {
-        for (int i = 0; i < activeAnimations.Count; i++)
-        {
-            if (activeAnimations[i].Tween != null)
-            {
-                LeanTween.cancel(activeAnimations[i].Tween.id, true);
-            }
-        }
-        activeAnimations.Clear();
     }
 }

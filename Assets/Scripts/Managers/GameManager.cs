@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviourPun
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
