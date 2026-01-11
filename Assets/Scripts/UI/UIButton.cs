@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField]
     private Button button;
@@ -19,12 +19,12 @@ public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private void Start()
     {
-        button.onClick.AddListener(OnButtonClick);
+        //button.onClick.AddListener(OnButtonClick);
     }
 
     private void OnButtonClick()
     {
-        clickAnimation.PlayInAnimations();
+        clickAnimation.PlayInAnimations(clickAnimation.PlayOutAnimations);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -37,5 +37,15 @@ public class UIButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if(!IsSelected)
             hoverAnimation.PlayOutAnimations();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        clickAnimation.PlayInAnimations();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        clickAnimation.PlayOutAnimations();
     }
 }

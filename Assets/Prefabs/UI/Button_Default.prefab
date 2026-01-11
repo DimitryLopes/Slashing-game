@@ -140,7 +140,7 @@ MonoBehaviour:
     - rid: 3587562658374877184
       type: {class: UIScaleAnimation, ns: , asm: Assembly-CSharp}
       data:
-        duration: 0.2
+        duration: 0.15
         priority: 0
         easeType: 9
         useCustomCurve: 0
@@ -173,15 +173,15 @@ MonoBehaviour:
         ignoreTimeScale: 0
         useCustomTarget: 0
         customAnimationTarget: {fileID: 0}
-        startWithSetScale: 1
-        startScale: {x: 1, y: 1, z: 0}
-        endScale: {x: 1.2, y: 1.2, z: 1}
+        startWithSetScale: 0
+        startScale: {x: 1.15, y: 1.15, z: 0}
+        endScale: {x: 0.85, y: 0.85, z: 1}
     - rid: 3587562658374877185
       type: {class: UIScaleAnimation, ns: , asm: Assembly-CSharp}
       data:
-        duration: 0.2
+        duration: 0.3
         priority: 0
-        easeType: 9
+        easeType: 27
         useCustomCurve: 0
         customCurve:
           serializedVersion: 2
@@ -212,8 +212,8 @@ MonoBehaviour:
         ignoreTimeScale: 0
         useCustomTarget: 0
         customAnimationTarget: {fileID: 0}
-        startWithSetScale: 1
-        startScale: {x: 1.2, y: 1.2, z: 0}
+        startWithSetScale: 0
+        startScale: {x: 0.85, y: 0.85, z: 0}
         endScale: {x: 1, y: 1, z: 1}
 --- !u!1 &1495902574737576203
 GameObject:
@@ -531,11 +531,13 @@ MonoBehaviour:
   - rid: 3587562670440316928
   - rid: 3587562670440316929
   - rid: 3587562670440316933
+  - rid: 3587562670440316934
   outAnimations:
   - rid: 3587562658374877187
   - rid: 3587562670440316930
   - rid: 3587562670440316931
   - rid: 3587562670440316932
+  - rid: 3587562670440316935
   componentPriority: 0
   animationTarget: {fileID: 6087641943241724120}
   deactivateOnHide: 0
@@ -585,7 +587,7 @@ MonoBehaviour:
         targetType: 0
         targetImage: {fileID: 1206917090981117149}
         targetText: {fileID: 0}
-        targetColor: {r: 0.4509804, g: 0.22352941, b: 0.7490196, a: 1}
+        targetColor: {r: 0, g: 1, b: 1, a: 1}
     - rid: 3587562658374877187
       type: {class: UIColorAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -665,7 +667,7 @@ MonoBehaviour:
         targetType: 0
         targetImage: {fileID: 3696331061628861727}
         targetText: {fileID: 0}
-        targetColor: {r: 0.4509804, g: 0.22352941, b: 0.7490196, a: 1}
+        targetColor: {r: 0, g: 1, b: 1, a: 1}
     - rid: 3587562670440316929
       type: {class: UIColorAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -705,7 +707,7 @@ MonoBehaviour:
         targetType: 1
         targetImage: {fileID: 0}
         targetText: {fileID: 8050677981842284250}
-        targetColor: {r: 0.4509804, g: 0.22352941, b: 0.7490196, a: 1}
+        targetColor: {r: 0, g: 1, b: 1, a: 1}
     - rid: 3587562670440316930
       type: {class: UIColorAnimation, ns: , asm: Assembly-CSharp}
       data:
@@ -863,6 +865,84 @@ MonoBehaviour:
         customAnimationTarget: {fileID: 0}
         startWithSetScale: 1
         startScale: {x: 0.8, y: 0.8, z: 0}
+        endScale: {x: 1, y: 1, z: 1}
+    - rid: 3587562670440316934
+      type: {class: UIScaleAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 0.5
+        priority: 0
+        easeType: 9
+        useCustomCurve: 0
+        customCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        loopCount: 0
+        startDelay: 0
+        ignoreTimeScale: 0
+        useCustomTarget: 1
+        customAnimationTarget: {fileID: 7533369552309696023}
+        startWithSetScale: 0
+        startScale: {x: 1, y: 1, z: 0}
+        endScale: {x: 1.15, y: 1.15, z: 1}
+    - rid: 3587562670440316935
+      type: {class: UIScaleAnimation, ns: , asm: Assembly-CSharp}
+      data:
+        duration: 0.5
+        priority: 0
+        easeType: 9
+        useCustomCurve: 0
+        customCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        loopCount: 0
+        startDelay: 0
+        ignoreTimeScale: 0
+        useCustomTarget: 1
+        customAnimationTarget: {fileID: 7533369552309696023}
+        startWithSetScale: 0
+        startScale: {x: 1.15, y: 1.15, z: 0}
         endScale: {x: 1, y: 1, z: 1}
 --- !u!1 &9000809131351341589
 GameObject:
