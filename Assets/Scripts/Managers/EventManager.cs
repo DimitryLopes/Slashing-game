@@ -29,6 +29,7 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<Target> OnTargetMiss = new UnityEvent<Target>();
 
     public static Action OnConnectedToMasterEvent;
+    public static Action OnLobbyJoinedEvent;
     public static Action<List<RoomInfo>> OnRoomListUpdateEvent;
     public static Action<RoomInfo, Player> OnPlayerJoinedRoomEvent;
     public static Action<RoomInfo> OnJoinedRoomEvent;

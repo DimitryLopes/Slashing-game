@@ -18,9 +18,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private void Start()
+    public void ShowLobbyScreen()
     {
-        var controller = new LobbyScreenController(Connect, JoinRoom, LeaveRoom, CreateRoom);
+        var controller = new LobbyScreenController(JoinRoom, LeaveRoom, CreateRoom);
         ScreenManager.Instance.Show<LobbyScreen>(controller);
     }
 
@@ -35,7 +35,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
         EventManager.OnConnectedToMasterEvent?.Invoke();
-    }    
+    }
+
+    public override void OnJoinedLobby()
+    {
+        EventManager.OnLobbyJoinedEvent.Invoke();
+        ShowLobbyScreen();
+    }
 
     public void CreateRoom()
     {

@@ -1,6 +1,5 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,10 +9,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
 {
     [SerializeField]
     private Button createRoomButton;
-    [SerializeField]
-    private Button connectButton;
-    [SerializeField]
-    private TMP_InputField playerNameInput;
     [SerializeField]
     private TextMeshProUGUI statusText;
     [SerializeField]
@@ -39,7 +34,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
         EventManager.OnJoinedRoomEvent += OnJoinedRoom;
         EventManager.OnConnectedToMasterEvent += OnConnectedToMaster;
 
-        connectButton.onClick.AddListener(OnConnectButtonClicked);
         createRoomButton.onClick.AddListener(OnCreateRoomButtonClicked);
     }
 
@@ -55,11 +49,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
     {
         lobbyContainer.SetActive(true);
         loginContainer.SetActive(false);
-    }
-
-    public void OnConnectButtonClicked()
-    {
-        Controller.OnConnectClicked.Invoke(statusText.text);
     }
 
     private void OnCreateRoomButtonClicked()

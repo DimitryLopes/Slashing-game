@@ -103,7 +103,32 @@ public class GameManager : MonoBehaviourPun
     {
         if(scene.name == Constants.Scenes.GAME)
         ChangeState(GameState.InGame);
+        if (scene.name == Constants.Scenes.MENU)
+            ShowMainMenu();
     }
+    #region Menu
+    private void ShowMainMenu()
+    {
+        var controller = new MainMenuScreenController(ShowLobbyScreen,ShowSettingsScreen,Quit);
+        ScreenManager.Instance.Show<MainMenuScreen>(controller);
+    }
+
+    private void ShowLobbyScreen()
+    {
+        ScreenManager.Instance.Show<LoadingScreen>(new LoadingScreenController());
+        NetworkManager.Instance.Connect("a");
+    }
+
+    private void ShowSettingsScreen()
+    {
+
+    }
+
+    private void Quit()
+    {
+        Application.Quit();
+    }
+    #endregion
 
     #region InGame
     private IEnumerator HandleInGameState()
