@@ -16,8 +16,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
     [SerializeField]
     private Button roomButtonPrefab;
     [SerializeField]
-    private GameObject loginContainer;
-    [SerializeField]
     private GameObject lobbyContainer;
 
     private List<RoomInfo> availableRooms = new List<RoomInfo>();
@@ -43,12 +41,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
         EventManager.OnPlayerJoinedRoomEvent -= OnPlayerJoinedRoom;
         EventManager.OnJoinedRoomEvent -= OnJoinedRoom;
         EventManager.OnConnectedToMasterEvent -= OnConnectedToMaster;
-    }
-
-    private void OnConnectedToMaster()
-    {
-        lobbyContainer.SetActive(true);
-        loginContainer.SetActive(false);
     }
 
     private void OnCreateRoomButtonClicked()
