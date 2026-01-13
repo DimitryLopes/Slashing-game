@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviourPun
     public int Lives { get; private set; }
 
 
-    private GameState currentState;
+    private GameState currentState = GameState.Initializing;
 
     public GameState CurrentState
     {
@@ -80,7 +80,11 @@ public class GameManager : MonoBehaviourPun
 
     private void HandleMenuState()
     {
-        SceneManager.LoadScene(Constants.Scenes.MENU);
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName != Constants.Scenes.MENU)
+            SceneManager.LoadScene(Constants.Scenes.MENU);
+        else
+            ShowMainMenu();
     }
 
     private void HandleLobbyState()
@@ -202,5 +206,6 @@ public enum GameState
     Lobby,
     Room,
     InGame,
-    EndGame
+    EndGame,
+    Initializing
 }
