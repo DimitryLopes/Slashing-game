@@ -30,7 +30,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
         EventManager.OnRoomListUpdateEvent += OnRoomListUpdate;
         EventManager.OnPlayerJoinedRoomEvent += OnPlayerJoinedRoom;
         EventManager.OnJoinedRoomEvent += OnJoinedRoom;
-        EventManager.OnConnectedToMasterEvent += OnConnectedToMaster;
 
         createRoomButton.onClick.AddListener(OnCreateRoomButtonClicked);
     }
@@ -40,7 +39,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
         EventManager.OnRoomListUpdateEvent -= OnRoomListUpdate;
         EventManager.OnPlayerJoinedRoomEvent -= OnPlayerJoinedRoom;
         EventManager.OnJoinedRoomEvent -= OnJoinedRoom;
-        EventManager.OnConnectedToMasterEvent -= OnConnectedToMaster;
     }
 
     private void OnCreateRoomButtonClicked()
