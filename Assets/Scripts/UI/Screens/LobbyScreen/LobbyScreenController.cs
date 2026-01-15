@@ -4,7 +4,7 @@ public class LobbyScreenController : ScreenController
 {
     public readonly Action<string> OnJoinClicked;
     public readonly Action OnLeaveClicked;
-    public readonly Action OnCreateClickedRoom;
+    public readonly Action OnCreateRoomButtonClicked;
   
     public LobbyScreenController(
         Action<string> onJoinClicked,
@@ -13,6 +13,6 @@ public class LobbyScreenController : ScreenController
     {
         OnJoinClicked = onJoinClicked;
         OnLeaveClicked = onLeaveClicked;
-        OnCreateClickedRoom = onCreateClickedRoom;
+        OnCreateRoomButtonClicked = onCreateClickedRoom;
     }
 }

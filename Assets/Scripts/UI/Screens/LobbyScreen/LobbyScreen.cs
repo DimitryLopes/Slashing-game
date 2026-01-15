@@ -7,88 +7,175 @@ using UnityEngine.UI;
 
 public class LobbyScreen : UIScreen<LobbyScreenController>
 {
-    [SerializeField]
+    private const int ROOMS_PER_PAGE = 5;
+
+    [SerializeField] 
     private Button createRoomButton;
     [SerializeField]
-    private TextMeshProUGUI statusText;
+    private Button refreshButton;
     [SerializeField]
+    private LobbyScreenPageButton pageButtonPrefab;
+    [SerializeField]
+    private RoomView roomViewPrefab;
+    [SerializeField] 
     private Transform roomListContainer;
     [SerializeField]
-    private Button roomButtonPrefab;
+    private Transform pageButtonContainer;
     [SerializeField]
     private GameObject lobbyContainer;
 
-    private List<RoomInfo> availableRooms = new List<RoomInfo>();
+    private List<RoomInfo> availableRooms = new();
+    private readonly List<RoomView> roomViewPool = new();
+    private readonly List<LobbyScreenPageButton> pageButtonPool = new();
+
+    private int currentPage = 0;
 
     private void Start()
     {
-        statusText.text = "Digite seu nome e entre em uma sala";
+        createRoomButton.onClick.AddListener(OnCreateRoomButtonClicked);
+        refreshButton.onClick.AddListener(OnRefreshButtonClicked);
     }
 
     protected override void OnBeforeShow()
     {
         EventManager.OnRoomListUpdateEvent += OnRoomListUpdate;
-        EventManager.OnPlayerJoinedRoomEvent += OnPlayerJoinedRoom;
-        EventManager.OnJoinedRoomEvent += OnJoinedRoom;
-
-        createRoomButton.onClick.AddListener(OnCreateRoomButtonClicked);
+        UpdateRoomListUI();
+        UpdatePageButtons();
     }
 
     protected override void OnBeforeHide()
     {
         EventManager.OnRoomListUpdateEvent -= OnRoomListUpdate;
-        EventManager.OnPlayerJoinedRoomEvent -= OnPlayerJoinedRoom;
-        EventManager.OnJoinedRoomEvent -= OnJoinedRoom;
-    }
-
-    private void OnCreateRoomButtonClicked()
-    {
-        Controller.OnCreateClickedRoom.Invoke();
     }
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log($"Atualização da lista de salas recebida. Total de salas: {roomList.Count}");
         availableRooms = roomList;
+        currentPage = 0;
         UpdateRoomListUI();
-    }
-
-    private void JoinRoom(string roomName)
-    {
-        statusText.text = $"Entrando na sala {roomName}...";
-        Controller.OnJoinClicked.Invoke(roomName);
-    }
-
-    //when another player joins
-    private void OnPlayerJoinedRoom(RoomInfo roomInfo, Player player)
-    {
-        statusText.text = $"{player.NickName} entrou na sala! Jogadores: {roomInfo.PlayerCount}";
-    }
-
-    //when this player joins
-    public void OnJoinedRoom(RoomInfo room)
-    {
-        statusText.text = $"Entrou na sala! Jogadores: {room.PlayerCount}";
-        if (room.PlayerCount == 2)
-        {
-            PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
-        }
+        UpdatePageButtons();
     }
 
     private void UpdateRoomListUI()
     {
-        foreach (Transform child in roomListContainer)
-        {
-            Destroy(child.gameObject);
-        }
+        DeactivateAllRoomViews();
 
-        foreach (var room in availableRooms)
-        {
-            if (!room.IsOpen || !room.IsVisible) continue;
+        int startIdx = currentPage * ROOMS_PER_PAGE;
+        int endIdx = Mathf.Min(startIdx + ROOMS_PER_PAGE, availableRooms.Count);
 
-            Button roomButton = Instantiate(roomButtonPrefab, roomListContainer);
-            roomButton.GetComponentInChildren<TMP_Text>().text = $"{room.Name} ({room.PlayerCount}/{room.MaxPlayers})";
-            roomButton.onClick.AddListener(() => JoinRoom(room.Name));
+        for (int i = startIdx, poolIdx = 0; i < endIdx; i++, poolIdx++)
+        {
+            RoomView view;
+            if (poolIdx < roomViewPool.Count)
+            {
+                view = roomViewPool[poolIdx];
+            }
+            else
+            {
+                view = Instantiate(roomViewPrefab, roomListContainer);
+                roomViewPool.Add(view);
+            }
+
+            var room = availableRooms[i];
+            int ping = PhotonNetwork.GetPing(); // ou use um método customizado se necessário
+
+            view.Initialize($"{room.Name}", ping, () => Controller.OnJoinClicked?.Invoke(room.Name));
+            view.Activate();
         }
     }
+
+    private void OnRefreshButtonClicked()
+    {
+        //Controller.OnRefreshButtonClicked?.Invoke();
+    }
+
+    private void OnCreateRoomButtonClicked()
+    {
+        Controller.OnCreateRoomButtonClicked?.Invoke();
+    }
+
+    private void UpdatePageButtons()
+    {
+        DeactivateAllPageButtons();
+
+        int pageCount = Mathf.CeilToInt(availableRooms.Count / (float)ROOMS_PER_PAGE);
+
+        for (int i = 0; i < pageCount; i++)
+        {
+            LobbyScreenPageButton btn;
+            if (i < pageButtonPool.Count)
+            {
+                btn = pageButtonPool[i];
+            }
+            else
+            {
+                btn = Instantiate(pageButtonPrefab, pageButtonContainer);
+                pageButtonPool.Add(btn);
+            }
+
+            int pageIndex = i;
+            btn.Initialize((pageIndex + 1).ToString(), () =>
+            {
+                currentPage = pageIndex;
+                UpdateRoomListUI();
+                HighlightCurrentPageButton();
+            });
+            btn.gameObject.SetActive(true);
+        }
+        HighlightCurrentPageButton();
+    }
+
+    private void HighlightCurrentPageButton()
+    {
+        for (int i = 0; i < pageButtonPool.Count; i++)
+        {
+            var indicator = pageButtonPool[i].transform.Find("SelectionIndicator");
+            if (indicator != null)
+                indicator.gameObject.SetActive(i == currentPage);
+        }
+    }
+
+    #region Pooling
+
+    private void DeactivateAllPageButtons()
+    {
+        foreach(var button in pageButtonPool)
+        {
+            button.Deactivate();
+        }
+    }
+
+    private void DeactivateAllRoomViews()
+    {
+        foreach (var view in roomViewPool)
+        {
+            view.Deactivate();
+        }
+    }
+
+    private LobbyScreenPageButton GetAvailablePageButton()
+    {
+        foreach (var button in pageButtonPool)
+        {
+            if (!button.IsActive)
+                return button;
+        }
+
+        var newButton = Instantiate(pageButtonPrefab, pageButtonContainer);
+        pageButtonPool.Add(newButton);
+        return newButton;
+    }
+
+    private RoomView GetAvailableRoomView()
+    {
+        foreach (var view in roomViewPool)
+        {
+            if (!view.IsActive)
+                return view;
+        }
+        var newView = Instantiate(roomViewPrefab, roomListContainer);
+        roomViewPool.Add(newView);
+        return newView;
+    }
+    #endregion
 }
