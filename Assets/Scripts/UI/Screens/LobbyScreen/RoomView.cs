@@ -22,11 +22,30 @@ public class RoomView : Activateable
     [SerializeField]
     private Image gameModeIcon;
 
-    public void Initialize(string roomName, int latency,
-        UnityAction onJoinRoomClicked)
+    private UnityAction<string> onJoinRoomClicked;
+    private string roomName;
+
+    public override void OnActivate()
     {
+        joinRoomButton.onClick.AddListener(OnJoinRoomClicked);
+    }
+
+    public override void OnDeactivate()
+    {
+        joinRoomButton.onClick.RemoveListener(OnJoinRoomClicked);
+    }
+
+    public void Initialize(string roomName, int latency,
+        UnityAction<string> onJoinRoomClicked)
+    {
+        this.roomName = roomName;
         roomNameText.text = string.Format(ROOM_NAME_FORMAT, roomName);
         latencyText.text = string.Format(LATENCY_FORMAT, latency);
-        joinRoomButton.onClick.AddListener(onJoinRoomClicked);
+        this.onJoinRoomClicked = onJoinRoomClicked;
+    }
+
+    private void OnJoinRoomClicked()
+    {
+        onJoinRoomClicked?.Invoke(roomName);
     }
 }

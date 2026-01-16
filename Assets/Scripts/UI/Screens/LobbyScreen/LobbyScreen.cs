@@ -21,8 +21,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
     private Transform roomListContainer;
     [SerializeField]
     private Transform pageButtonContainer;
-    [SerializeField]
-    private GameObject lobbyContainer;
 
     private List<RoomInfo> availableRooms = new();
     private readonly List<RoomView> roomViewPool = new();
@@ -77,16 +75,16 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
             }
 
             var room = availableRooms[i];
-            int ping = PhotonNetwork.GetPing(); // ou use um método customizado se necessário
+            int ping = PhotonNetwork.GetPing();
 
-            view.Initialize($"{room.Name}", ping, () => Controller.OnJoinClicked?.Invoke(room.Name));
+            view.Initialize(room.Name, ping, Controller.OnJoinClicked);
             view.Activate();
         }
     }
 
     private void OnRefreshButtonClicked()
     {
-        //Controller.OnRefreshButtonClicked?.Invoke();
+        Controller.OnRefreshButtonClicked?.Invoke();
     }
 
     private void OnCreateRoomButtonClicked()

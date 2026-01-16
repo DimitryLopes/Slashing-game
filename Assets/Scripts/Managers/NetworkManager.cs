@@ -1,10 +1,13 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     public static NetworkManager Instance { get; private set; }
+    public const int ROOM_REFRESH_INTERVAL = 5;
+    private float RoomRefreshTimer = 0f;
 
     private void Awake()
     {
@@ -18,9 +21,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
+    private void Update()
+    {
+        if (RoomRefreshTimer < ROOM_REFRESH_INTERVAL)
+        {
+            RoomRefreshTimer += Time.deltaTime;
+        }
+    }
+
     public void ShowLobbyScreen()
     {
-        var controller = new LobbyScreenController(JoinRoom, LeaveRoom, CreateRoom);
+        var controller = new LobbyScreenController(JoinRoom, LeaveRoom, CreateRoom, RefreshRooms);
         ScreenManager.Instance.Show<LobbyScreen>(controller);
     }
 
@@ -53,6 +64,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         });
     }
 
+    private void RefreshRooms()
+    {
+        PhotonNetwork.JoinLobby();
+    }
+
     private void JoinRoom(string roomName)
     {
         PhotonNetwork.JoinRoom(roomName);
@@ -65,6 +81,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
+        if(RoomRefreshTimer >= ROOM_REFRESH_INTERVAL)
+        {
+            RoomRefreshTimer = 0f;
+        }
         EventManager.OnRoomListUpdateEvent?.Invoke(roomList);
     }
 
