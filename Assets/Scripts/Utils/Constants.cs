@@ -17,4 +17,12 @@ public class Constants
         public const string TARGET_TAG = "Target";
         public const string DEATH_PLANE_TAG = "Death Plane";
     }
+
+    public static class Networking
+    {
+        public const int MAX_PLAYERS_IN_ROOM = 4;
+        public const string PLAYER_PING = "ping";
+        public const string PLAYER_READY = "ready";
+        public const string ROOM_NAME = "name";
+    }
 }

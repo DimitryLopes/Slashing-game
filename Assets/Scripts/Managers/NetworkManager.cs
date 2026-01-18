@@ -1,5 +1,6 @@
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -58,9 +59,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.CreateRoom(PhotonNetwork.NickName + "'s Room", new RoomOptions
         {
-            MaxPlayers = 2,
+            MaxPlayers = Constants.Networking.MAX_PLAYERS_IN_ROOM,
             IsOpen = true,
-            IsVisible = true
+            IsVisible = true,
+            CustomRoomProperties = {{ Constants.Networking.ROOM_NAME, name }},
         });
     }
 
@@ -70,13 +72,39 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     private void JoinRoom(string roomName)
-    {
+    {   
+        PhotonNetwork.LocalPlayer.CreateCustomProperties(PhotonNetwork.GetPing(), false);
         PhotonNetwork.JoinRoom(roomName);
     }
 
     private void LeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
+    }
+
+    private void LoadGameScene()
+    {
+        PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
+    }
+
+    private void ToggleReady()
+    {
+        Player player = PhotonNetwork.LocalPlayer;
+        bool isReady = (bool)player.CustomProperties[Constants.Networking.PLAYER_READY];
+        player.SetCustomProperty(Constants.Networking.PLAYER_READY, !isReady);
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        if(changedProps.ContainsKey(Constants.Networking.PLAYER_READY))
+        {
+            EventManager.OnPlayerReadyStatusChanged?.Invoke(targetPlayer);
+        }
+    }
+
+    private void KickPlayer(Player player)
+    {
+        PhotonNetwork.CloseConnection(player);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -88,9 +116,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         EventManager.OnRoomListUpdateEvent?.Invoke(roomList);
     }
 
-    public override void OnPlayerEnteredRoom(Player player)
+    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        EventManager.OnPlayerJoinedRoomEvent?.Invoke(PhotonNetwork.CurrentRoom, player);
+        base.OnPlayerLeftRoom(otherPlayer);
+    }
+
+    public override void OnPlayerEnteredRoom(Player otherPlayer)
+    {
+        EventManager.OnPlayerJoinedRoomEvent?.Invoke(PhotonNetwork.CurrentRoom, otherPlayer);
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
@@ -99,11 +132,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        Player localPlayer = PhotonNetwork.LocalPlayer;
+        float ping = PhotonNetwork.GetPing();
+        localPlayer.SetCustomProperty(Constants.Networking.PLAYER_PING, ping);
+        string name = PhotonNetwork.CurrentRoom.GetRoomName();
+
+        RoomScreenController controller = new RoomScreenController(
+            name, LeaveRoom, ToggleReady, LoadGameScene, KickPlayer);
+            
+        ScreenManager.Instance.Show<RoomScreen>(controller);
+
         EventManager.OnJoinedRoomEvent?.Invoke(PhotonNetwork.CurrentRoom);
-        if(PhotonNetwork.CurrentRoom.PlayerCount == 2)
-        {
-            PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
-        }
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)
