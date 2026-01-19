@@ -14,9 +14,9 @@ public class RoomScreen : UIScreen<RoomScreenController>
     [SerializeField]
     private TextMeshProUGUI playersReadyText;
     [SerializeField]
-    private Button leaveRoomButton;
-    [SerializeField]
     private Button readyButton;
+    [SerializeField]
+    private Button leaveRoomButton;
     [SerializeField]
     private Button startGameButton;
 
@@ -32,18 +32,36 @@ public class RoomScreen : UIScreen<RoomScreenController>
         EventManager.OnPlayerJoinedRoomEvent += OnPlayerJoined;
         EventManager.OnPlayerReadyStatusChanged += OnPlayerReadyStatusChanged;
         leaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClicked);
-        readyButton.onClick.AddListener(OnReadyButtonClicked);
         startGameButton.onClick.AddListener(OnStartGameButtonClicked);
+        readyButton.onClick.AddListener(OnReadyButtonClicked);
+
+        if (IsFirstShow)
+        {
+            foreach (PlayerView view in playerViews)
+            {
+                view.Setup(Controller.OnKickPlayerButtonClicked);
+            }
+        }
+
+        foreach(Player player in Controller.PlayersInRoom)
+        {
+            UpdateAvailableView(player);
+        }
     }
 
     protected override void OnAfterHide()
     {
         base.OnAfterHide();
         EventManager.OnPlayerJoinedRoomEvent -= OnPlayerJoined;
+        EventManager.OnPlayerLeftRoomEvent -= OnPlayerLeft;
         EventManager.OnPlayerReadyStatusChanged -= OnPlayerReadyStatusChanged;
         leaveRoomButton.onClick.RemoveListener(OnLeaveRoomButtonClicked);
-        readyButton.onClick.RemoveListener(OnReadyButtonClicked);
         startGameButton.onClick.RemoveListener(OnStartGameButtonClicked);
+        readyButton.onClick.RemoveListener(OnReadyButtonClicked);
+        foreach (PlayerView view in playerViews)
+        {
+            view.Clear();
+        }
     }
 
     private void UpdatePlayersCountText()
@@ -76,19 +94,55 @@ public class RoomScreen : UIScreen<RoomScreenController>
     }
     #endregion
 
-    #region Player Views Management
-    private void OnPlayerJoined(RoomInfo info, Player player)
+    private void UpdateBottomButtons()
     {
-        for (int i = 0; i < playerViews.Count; i++)
+        bool isMaster = Controller.MasterClient == Controller.LocalPlayer;
+        startGameButton.gameObject.SetActive(isMaster);
+        readyButton.gameObject.SetActive(isMaster);
+    }
+
+    #region Player Management
+
+    private void UpdateAvailableView(Player player)
+    {
+        var playerView = GetAvailablePlayerView();
+        UpdatePlayerView(playerView, player);
+    }
+
+    private void UpdatePlayerView(PlayerView view, Player player)
+    {
+        if (player == null)
         {
-            PlayerView pv = playerViews[i];
-            if (!pv.IsOccupied)
+            if (view.Player.UserId == player.UserId)
             {
-                pv.SetPlayer(player);
+                view.Clear();
+                return;
+            }
+            else if (view.Player != null)
+            {
+                Debug.LogError($"Attempted to clear {view.name}. It doesn't  belong to {player.NickName}. It belongs to {view.Player.NickName}");
+            }
+            else
+            {
+                Debug.LogError($"Attempted to clear {view.name}. It is already empty.");
+            }
+            return;
+        }
+
+        bool isLocalPlayer = player == Controller.LocalPlayer;
+        view.SetPlayer(player, isLocalPlayer, player.IsMasterClient);
+    }
+
+    private void UpdatePlayerView(Player player)
+    {
+        foreach(PlayerView pv in playerViews)
+        {
+            if (pv.IsOccupied && pv.Player == player)
+            {
+                pv.SetPlayer(player, player == Controller.LocalPlayer, player.IsMasterClient);
                 break;
             }
         }
-        UpdatePlayersCountText();
     }
 
     private void OnPlayerReadyStatusChanged(Player player)
@@ -104,21 +158,58 @@ public class RoomScreen : UIScreen<RoomScreenController>
             }
         }
 
-        readyButton.interactable = isEveryoneReady;
+        UpdatePlayersCountText();
+        startGameButton.interactable = isEveryoneReady;
+    }
+
+    private void OnMasterClientChanged(Player newMasterClient)
+    {
+        if (newMasterClient.IsLocal)
+        {
+            Controller.MasterClient = Controller.LocalPlayer;
+            UpdateBottomButtons();
+        }
+
+        UpdatePlayerView(newMasterClient);
+    }
+
+    private void OnPlayerJoined(RoomInfo info, Player player)
+    {
+        UpdateAvailableView(player);
+        Controller.PlayersInRoom.Add(player);
+        UpdatePlayersCountText();
     }
 
     private void OnPlayerLeft(RoomInfo info, Player player)
     {
-        for (int i = 0; i < playerViews.Count; i++)
+        foreach (PlayerView pv in playerViews)
         {
-            PlayerView pv = playerViews[i];
             if (pv.IsOccupied && pv.Player == player)
             {
                 pv.Clear();
                 break;
             }
         }
+        Controller.PlayersInRoom.Remove(player);
+
+        if(Controller.MasterClient.UserId != player.UserId)
+        {
+            OnMasterClientChanged(player);
+        }
+
         UpdatePlayersCountText();
+    }
+
+    private PlayerView GetAvailablePlayerView()
+    {
+        foreach (PlayerView pv in playerViews)
+        {
+            if (!pv.IsOccupied)
+            {
+                return pv;
+            }
+        }
+        return null;
     }
     #endregion
 }

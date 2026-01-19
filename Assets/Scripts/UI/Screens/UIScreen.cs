@@ -54,6 +54,7 @@ public class UIScreen<U> : MonoBehaviour, IScreen where U : ScreenController
     {
         EventManager.OnScreenBeforeShowEvent.Invoke(this);
     }
+
     protected virtual void OnAfterShow()
     {
         IsShown = true;

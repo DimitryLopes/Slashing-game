@@ -34,6 +34,7 @@ public class EventManager : MonoBehaviour
     public static Action<List<RoomInfo>> OnRoomListUpdateEvent;
     //Room Screen
     public static Action<RoomInfo, Player> OnPlayerJoinedRoomEvent;
+    public static Action<RoomInfo, Player> OnPlayerLeftRoomEvent;
     public static Action<RoomInfo> OnJoinedRoomEvent;
     public static Action<Player> OnPlayerReadyStatusChanged;
     //public static Action<string> OnJoinRoomFailedEvent;

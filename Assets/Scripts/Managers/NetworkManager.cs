@@ -6,8 +6,10 @@ using UnityEngine;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    public static NetworkManager Instance { get; private set; }
     public const int ROOM_REFRESH_INTERVAL = 5;
+    public const string ROOM_NAME_SUFIX = "'s Room";
+
+    public static NetworkManager Instance { get; private set; }
     private float RoomRefreshTimer = 0f;
 
     private void Awake()
@@ -57,7 +59,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(PhotonNetwork.NickName + "'s Room", new RoomOptions
+        PhotonNetwork.CreateRoom(PhotonNetwork.NickName + ROOM_NAME_SUFIX, new RoomOptions
         {
             MaxPlayers = Constants.Networking.MAX_PLAYERS_IN_ROOM,
             IsOpen = true,
@@ -94,17 +96,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         player.SetCustomProperty(Constants.Networking.PLAYER_READY, !isReady);
     }
 
+    private void KickPlayer(Player player)
+    {
+        PhotonNetwork.CloseConnection(player);
+    }
+
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
         if(changedProps.ContainsKey(Constants.Networking.PLAYER_READY))
         {
             EventManager.OnPlayerReadyStatusChanged?.Invoke(targetPlayer);
         }
-    }
-
-    private void KickPlayer(Player player)
-    {
-        PhotonNetwork.CloseConnection(player);
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -135,10 +137,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Player localPlayer = PhotonNetwork.LocalPlayer;
         float ping = PhotonNetwork.GetPing();
         localPlayer.SetCustomProperty(Constants.Networking.PLAYER_PING, ping);
-        string name = PhotonNetwork.CurrentRoom.GetRoomName();
 
         RoomScreenController controller = new RoomScreenController(
-            name, LeaveRoom, ToggleReady, LoadGameScene, KickPlayer);
+            PhotonNetwork.CurrentRoom,
+            LeaveRoom,
+            ToggleReady,
+            LoadGameScene,
+            KickPlayer);
             
         ScreenManager.Instance.Show<RoomScreen>(controller);
 
@@ -147,6 +152,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
+        Debug.LogError($"Falha ao entrar na sala: {message}");
         //EventManager.OnJoinRoomFailedEvent?.Invoke($"Falha ao entrar na sala: {message}");
     }
 }

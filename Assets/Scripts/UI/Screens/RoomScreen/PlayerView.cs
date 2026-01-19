@@ -4,10 +4,12 @@ using UnityEngine.UI;
 using Photon.Realtime;
 using UnityEngine.Events;
 
-public class PlayerView : Activateable
+public class PlayerView : MonoBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI playerNameText;
+    [SerializeField]
+    private GameObject masterClientIcon;
     [SerializeField]
     private Button kickPlayerButton;
     [SerializeField]
@@ -27,25 +29,23 @@ public class PlayerView : Activateable
 
     public bool IsOccupied => associatedPlayer != null;
 
-    public override void OnDeactivate()
+    public void Setup(UnityAction<Player> kickPlayerActionm)
     {
-        associatedPlayer = null;
-        UpdatePlayerView();
-    }
+        onPlayerKickButtonPressed = kickPlayerActionm;
 
-    public void Setup(bool isLocalPlayer, bool isMasterClient, UnityAction kickPlayerAction)
-    {
-        bool shouldShowButton = !isLocalPlayer && isMasterClient;
-        kickPlayerButton.gameObject.SetActive(shouldShowButton);
         UpdatePlayerView();
-        if (!shouldShowButton) return;
-
+     
         kickPlayerButton.onClick.RemoveAllListeners();
+
         kickPlayerButton.onClick.AddListener(OnPlayerKickButtonClick);
     }
 
-    public void SetPlayer(Player player)
+    public void SetPlayer(Player player, bool isLocalPlayer, bool isMasterClient)
     {
+        bool shouldShowKickButton = !isLocalPlayer && isMasterClient;
+        kickPlayerButton.gameObject.SetActive(shouldShowKickButton);
+        masterClientIcon.SetActive(isMasterClient);
+
         associatedPlayer = player;
         float ping = player.GetPing();
         latency.UpdateLatency(ping);
