@@ -43,7 +43,12 @@ public class RoomScreen : UIScreen<RoomScreenController>
             }
         }
 
-        foreach(Player player in Controller.PlayersInRoom)
+        foreach (PlayerView view in playerViews)
+        {
+            view.Clear();
+        }
+
+        foreach (Player player in Controller.PlayersInRoom)
         {
             UpdateAvailableView(player);
         }
@@ -58,10 +63,6 @@ public class RoomScreen : UIScreen<RoomScreenController>
         leaveRoomButton.onClick.RemoveListener(OnLeaveRoomButtonClicked);
         startGameButton.onClick.RemoveListener(OnStartGameButtonClicked);
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
-        foreach (PlayerView view in playerViews)
-        {
-            view.Clear();
-        }
     }
 
     private void UpdatePlayersCountText()
@@ -129,8 +130,7 @@ public class RoomScreen : UIScreen<RoomScreenController>
             return;
         }
 
-        bool isLocalPlayer = player == Controller.LocalPlayer;
-        view.SetPlayer(player, isLocalPlayer, player.IsMasterClient);
+        view.SetPlayer(player, player.IsLocal, player.IsMasterClient);
     }
 
     private void UpdatePlayerView(Player player)

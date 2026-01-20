@@ -36,6 +36,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
 
     protected override void OnBeforeShow()
     {
+        base.OnBeforeShow();
         EventManager.OnRoomListUpdateEvent += OnRoomListUpdate;
         UpdateRoomListUI();
         UpdatePageButtons();
@@ -43,6 +44,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
 
     protected override void OnBeforeHide()
     {
+        base.OnBeforeHide();
         EventManager.OnRoomListUpdateEvent -= OnRoomListUpdate;
     }
 
@@ -63,16 +65,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
 
         for (int i = startIdx, poolIdx = 0; i < endIdx; i++, poolIdx++)
         {
-            RoomView view;
-            if (poolIdx < roomViewPool.Count)
-            {
-                view = roomViewPool[poolIdx];
-            }
-            else
-            {
-                view = Instantiate(roomViewPrefab, roomListContainer);
-                roomViewPool.Add(view);
-            }
+            RoomView view = GetAvailableRoomView();
 
             var room = availableRooms[i];
             int ping = PhotonNetwork.GetPing();
@@ -80,16 +73,6 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
             view.Initialize(room.GetRoomName(), ping, Controller.OnJoinClicked);
             view.Activate();
         }
-    }
-
-    private void OnRefreshButtonClicked()
-    {
-        Controller.OnRefreshButtonClicked?.Invoke();
-    }
-
-    private void OnCreateRoomButtonClicked()
-    {
-        Controller.OnCreateRoomButtonClicked?.Invoke();
     }
 
     private void UpdatePageButtons()
@@ -100,27 +83,29 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
 
         for (int i = 0; i < pageCount; i++)
         {
-            LobbyScreenPageButton btn;
-            if (i < pageButtonPool.Count)
-            {
-                btn = pageButtonPool[i];
-            }
-            else
-            {
-                btn = Instantiate(pageButtonPrefab, pageButtonContainer);
-                pageButtonPool.Add(btn);
-            }
+            LobbyScreenPageButton button = GetAvailablePageButton();
 
-            int pageIndex = i;
-            btn.Initialize((pageIndex + 1).ToString(), () =>
-            {
-                currentPage = pageIndex;
-                UpdateRoomListUI();
-                HighlightCurrentPageButton();
-            });
-            btn.gameObject.SetActive(true);
+            button.Initialize(i, ChangePage);
+            button.gameObject.SetActive(true);
         }
         HighlightCurrentPageButton();
+    }
+
+    private void ChangePage(int index)
+    {
+        currentPage = index;
+        UpdateRoomListUI();
+        HighlightCurrentPageButton();
+    }
+
+    private void OnRefreshButtonClicked()
+    {
+        Controller.OnRefreshButtonClicked?.Invoke();
+    }
+
+    private void OnCreateRoomButtonClicked()
+    {
+        Controller.OnCreateRoomButtonClicked?.Invoke();
     }
 
     private void HighlightCurrentPageButton()

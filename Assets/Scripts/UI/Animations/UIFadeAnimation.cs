@@ -11,7 +11,7 @@ public class UIFadeAnimation : UIAnimation
         if (canvasGroup == null)
         {
             canvasGroup = target.AddComponent<CanvasGroup>();
-            Debug.LogWarning(target.name + "had no canvas group. Adding one as a fallback. please add one!");
+            Debug.LogWarning(target.name + " had no canvas group. Adding one as a fallback. please add one!");
         }
 
         canvasGroup.alpha = startAlpha;

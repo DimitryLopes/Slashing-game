@@ -53,19 +53,30 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
+        PhotonNetwork.LocalPlayer.CreateCustomProperties(PhotonNetwork.GetPing(), false);
         EventManager.OnLobbyJoinedEvent.Invoke();
+        PhotonNetwork.NickName = PhotonNetwork.LocalPlayer.UserId;
         ShowLobbyScreen();
     }
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(PhotonNetwork.NickName + ROOM_NAME_SUFIX, new RoomOptions
+        string roomName = PhotonNetwork.NickName + ROOM_NAME_SUFIX;
+        ExitGames.Client.Photon.Hashtable table = new ExitGames.Client.Photon.Hashtable
+        {
+            { 
+                Constants.Networking.ROOM_NAME, roomName
+            }
+        };        
+
+        RoomOptions roomOptions = new RoomOptions
         {
             MaxPlayers = Constants.Networking.MAX_PLAYERS_IN_ROOM,
             IsOpen = true,
             IsVisible = true,
-            CustomRoomProperties = {{ Constants.Networking.ROOM_NAME, name }},
-        });
+            CustomRoomProperties = table,
+        };
+        PhotonNetwork.CreateRoom(roomName, roomOptions);
     }
 
     private void RefreshRooms()
@@ -74,8 +85,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     private void JoinRoom(string roomName)
-    {   
-        PhotonNetwork.LocalPlayer.CreateCustomProperties(PhotonNetwork.GetPing(), false);
+    {
         PhotonNetwork.JoinRoom(roomName);
     }
 

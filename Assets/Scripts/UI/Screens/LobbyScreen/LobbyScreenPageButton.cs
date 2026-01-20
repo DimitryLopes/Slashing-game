@@ -12,12 +12,24 @@ public class LobbyScreenPageButton : Activateable
     [SerializeField]
     private GameObject selectionIndicator;
 
-    private UnityAction onButtonClicked;
+    private UnityAction<int> onButtonClicked;
 
-    public void Initialize(string text, UnityAction onClick)
+    private int pageIndex;
+
+    private void Start()
     {
-        buttonText.text = text;
+        button.onClick.AddListener(OnButtonClick);
+    }
+
+    public void Initialize(int index, UnityAction<int> onClick)
+    {
+        pageIndex = index;
+        buttonText.text = (index+1).ToString();
         onButtonClicked = onClick;
-        button.onClick.AddListener(onButtonClicked);
+    }
+
+    private void OnButtonClick()
+    {
+        onButtonClicked.Invoke(pageIndex);
     }
 }

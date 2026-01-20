@@ -10,12 +10,12 @@ public class LoadingScreen : UIScreen<LoadingScreenController>
     {
         base.OnBeforeShow();
         EventManager.OnLobbyJoinedEvent += Hide;
+        connectingIconAnimation.PlayInAnimations();
     }
 
     protected override void OnAfterShow()
     {
         base.OnAfterShow();
-        connectingIconAnimation.PlayInAnimations();
     }
 
     protected override void OnBeforeHide()

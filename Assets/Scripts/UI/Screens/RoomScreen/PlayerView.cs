@@ -29,9 +29,9 @@ public class PlayerView : MonoBehaviour
     [SerializeField]
     private RectTransform swapAnimationGlow;
     [SerializeField]
-    private float swapGlowStartAnhchoredX = -6;
+    private float swapGlowStartLocalX = -85.4f;
     [SerializeField]
-    private float swapGlowFinishAnhchoredX = 78;
+    private float swapGlowFinishLocaldX = -1;
     [SerializeField]
     private float swapAnimationDuration = 0.5f;
 
@@ -44,8 +44,6 @@ public class PlayerView : MonoBehaviour
     public void Setup(UnityAction<Player> kickPlayerActionm)
     {
         onPlayerKickButtonPressed = kickPlayerActionm;
-
-        UpdatePlayerView();
      
         kickPlayerButton.onClick.RemoveAllListeners();
 
@@ -63,7 +61,6 @@ public class PlayerView : MonoBehaviour
         latency.UpdateLatency(ping);
         UpdatePlayerView();
         playerNameText.text = player.NickName;
-        ChangePlayerStatus(player);
     }
 
     #region Swap animation
@@ -83,10 +80,12 @@ public class PlayerView : MonoBehaviour
         containerTo.gameObject.SetActive(true);
 
         containerFrom.transform.SetParent(swapAnimationContainer.transform, true);
-        swapAnimationGlow.anchoredPosition = new Vector2(swapGlowStartAnhchoredX, 0);
+        swapAnimationGlow.anchoredPosition = new Vector2(swapGlowStartLocalX, 0);
 
         TweenAnimationData data = new TweenAnimationData(swapAnimationContainer.gameObject,
             1, 0, swapAnimationDuration, OnSwapAnimationUpdate, OnSwapAnimationFinish);
+
+        swapAnimationGlow.transform.LeanMoveLocalX(-swapGlowFinishLocaldX, swapAnimationDuration);
     }
 
     private void OnSwapAnimationUpdate(float t)
@@ -113,6 +112,8 @@ public class PlayerView : MonoBehaviour
     public void Clear()
     {
         associatedPlayer = null;
+        notReadyContainer.SetActive(true);
+        readyContainer.SetActive(false);
         UpdatePlayerView();
     }
 

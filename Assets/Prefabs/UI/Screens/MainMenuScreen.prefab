@@ -325,6 +325,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayButton
       objectReference: {fileID: 0}
+    - target: {fileID: 8050677981842284250, guid: 5f66add45fa1fc94d81f10e1d26d09e5, type: 3}
+      propertyPath: m_text
+      value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 8050677981842284250, guid: 5f66add45fa1fc94d81f10e1d26d09e5, type: 3}
+      propertyPath: m_fontSize
+      value: 31.85
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -480,7 +488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8050677981842284250, guid: 5f66add45fa1fc94d81f10e1d26d09e5, type: 3}
       propertyPath: m_fontSize
-      value: 35
+      value: 31.85
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -637,7 +645,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8050677981842284250, guid: 5f66add45fa1fc94d81f10e1d26d09e5, type: 3}
       propertyPath: m_fontSize
-      value: 35
+      value: 31.85
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
