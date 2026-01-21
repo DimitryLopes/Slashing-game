@@ -22,20 +22,20 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<IScreen> OnScreenAfterShowEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeHideEvent = new UnityEvent<IScreen>();
     public static UnityEvent<IScreen> OnScreenBeforeShowEvent = new UnityEvent<IScreen>();
-    
+
     public static UnityEvent<int> OnPlayerDamaged = new UnityEvent<int>();
     public static UnityEvent<float> OnScoreUpdated = new UnityEvent<float>();
     public static UnityEvent<Target, HitInfo> OnTargetHit = new UnityEvent<Target, HitInfo>();
     public static UnityEvent<Target> OnTargetMiss = new UnityEvent<Target>();
 
-    public static Action OnConnectedToMasterEvent;
-    public static Action OnLobbyJoinedEvent;
+    public static UnityEvent OnConnectedToMasterEvent = new UnityEvent();
+    public static UnityEvent OnLobbyJoinedEvent = new UnityEvent();
     //Lobby Screen
-    public static Action<List<RoomInfo>> OnRoomListUpdateEvent;
+    public static UnityEvent<List<RoomInfo>> OnRoomListUpdateEvent = new UnityEvent<List<RoomInfo>>();
     //Room Screen
-    public static Action<RoomInfo, Player> OnPlayerJoinedRoomEvent;
-    public static Action<RoomInfo, Player> OnPlayerLeftRoomEvent;
-    public static Action<RoomInfo> OnJoinedRoomEvent;
-    public static Action<Player> OnPlayerReadyStatusChanged;
+    public static UnityEvent<RoomInfo, Player> OnPlayerJoinedRoomEvent = new UnityEvent<RoomInfo, Player>();
+    public static UnityEvent<Player> OnPlayerLeftRoomEvent = new UnityEvent<Player>();
+    public static UnityEvent<RoomInfo> OnJoinedRoomEvent = new UnityEvent<RoomInfo>();
+    public static UnityEvent<Player> OnPlayerReadyStatusChanged = new UnityEvent<Player>();
     //public static Action<string> OnJoinRoomFailedEvent;
 }

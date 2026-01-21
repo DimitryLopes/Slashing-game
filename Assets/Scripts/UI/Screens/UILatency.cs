@@ -20,27 +20,28 @@ public class UILatency : MonoBehaviour
     public void UpdateLatency(float latency)
     {
         latencyText.text = string.Format(LATENCY_TEXT_FORMAT, latency);
-        
-    //    switch (latency)
-    //    {
-    //        case float l when l <= LATENCY_BEST_THRESHOLD:
-    //            latencyIconFill.color = Color.cyan;
-    //            break;
-    //        case float l when l <= LATENCY_GOOD_THRESHOLD:
-    //            latencyIconFill.color = Color.green;
-    //            break;
-    //        case float l when l <= LATENCY_AVERAGE_THRESHOLD:
-    //            latencyIconFill.color = Color.yellow;
-    //            break;
-    //        case float l when l <= LATENCY_BAD_THRESHOLD:
-    //            latencyIconFill.color = new Color(1f, 0.65f, 0f); // Orange;
-    //            break;
-    //        case float l when l <= LATENCY_TERRIBLE_THRESHOLD:
-    //            latencyIconFill.color = new Color(0.75f, 0f, 0f); // Dark Red
-    //            break;
-    //        default:
-    //            latencyIconFill.color = Color.black;
-    //            break;
-    //    }
-    //}
+
+        //    switch (latency)
+        //    {
+        //        case float l when l <= LATENCY_BEST_THRESHOLD:
+        //            latencyIconFill.color = Color.cyan;
+        //            break;
+        //        case float l when l <= LATENCY_GOOD_THRESHOLD:
+        //            latencyIconFill.color = Color.green;
+        //            break;
+        //        case float l when l <= LATENCY_AVERAGE_THRESHOLD:
+        //            latencyIconFill.color = Color.yellow;
+        //            break;
+        //        case float l when l <= LATENCY_BAD_THRESHOLD:
+        //            latencyIconFill.color = new Color(1f, 0.65f, 0f); // Orange;
+        //            break;
+        //        case float l when l <= LATENCY_TERRIBLE_THRESHOLD:
+        //            latencyIconFill.color = new Color(0.75f, 0f, 0f); // Dark Red
+        //            break;
+        //        default:
+        //            latencyIconFill.color = Color.black;
+        //            break;
+        //    }
+        //}
+    }
 }

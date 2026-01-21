@@ -1,6 +1,7 @@
 using Photon.Realtime;
 using System.Collections.Generic;
 using TMPro;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,17 +24,20 @@ public class RoomScreen : UIScreen<RoomScreenController>
     [SerializeField]
     private List<PlayerView> playerViews;
 
-    private byte playerCount;
+    private bool IsLocalPlayerMaster => PhotonNetwork.CurrentRoom.masterClientId == PhotonNetwork.LocalPlayer.ActorNumber;
 
     override protected void OnBeforeShow()
     {
         base.OnBeforeShow();
-        roomNameText.text = Controller.ScreenName;
-        EventManager.OnPlayerJoinedRoomEvent += OnPlayerJoined;
-        EventManager.OnPlayerReadyStatusChanged += OnPlayerReadyStatusChanged;
+        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        EventManager.OnPlayerJoinedRoomEvent.AddListener(OnPlayerJoined);
+        EventManager.OnPlayerReadyStatusChanged.AddListener(OnPlayerReadyStatusChanged);
+        EventManager.OnPlayerLeftRoomEvent.AddListener(OnPlayerLeft);
         leaveRoomButton.onClick.AddListener(OnLeaveRoomButtonClicked);
         startGameButton.onClick.AddListener(OnStartGameButtonClicked);
         readyButton.onClick.AddListener(OnReadyButtonClicked);
+
+        UpdateBottomButtons();
 
         if (IsFirstShow)
         {
@@ -43,12 +47,9 @@ public class RoomScreen : UIScreen<RoomScreenController>
             }
         }
 
-        foreach (PlayerView view in playerViews)
-        {
-            view.Clear();
-        }
+        ClearPlayerViews();
 
-        foreach (Player player in Controller.PlayersInRoom)
+        foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
         {
             UpdateAvailableView(player);
         }
@@ -57,28 +58,32 @@ public class RoomScreen : UIScreen<RoomScreenController>
     protected override void OnAfterHide()
     {
         base.OnAfterHide();
-        EventManager.OnPlayerJoinedRoomEvent -= OnPlayerJoined;
-        EventManager.OnPlayerLeftRoomEvent -= OnPlayerLeft;
-        EventManager.OnPlayerReadyStatusChanged -= OnPlayerReadyStatusChanged;
+        EventManager.OnPlayerJoinedRoomEvent.RemoveListener(OnPlayerJoined);
+        EventManager.OnPlayerLeftRoomEvent.RemoveListener(OnPlayerLeft);
+        EventManager.OnPlayerReadyStatusChanged.RemoveListener(OnPlayerReadyStatusChanged);
         leaveRoomButton.onClick.RemoveListener(OnLeaveRoomButtonClicked);
         startGameButton.onClick.RemoveListener(OnStartGameButtonClicked);
         readyButton.onClick.RemoveListener(OnReadyButtonClicked);
     }
 
-    private void UpdatePlayersCountText()
+    private void UpdatePlayersReadyText()
     {
-        if(playerCount == Controller.MaxPlayersInRoom)
+        int playersReadyCount = 0;
+
+        foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
         {
-            playersReadyText.text = string.Format(MAX_PLAYERS_COUNT_FORMAT, playerCount, Controller.MaxPlayersInRoom);
+            if ((bool)player.CustomProperties[Constants.Networking.PLAYER_READY])
+            {
+                playersReadyCount++;
+            }
         }
-        else
-        {
-            playersReadyText.text = string.Format(PLAYERS_COUNT_FORMAT, playerCount, Controller.MaxPlayersInRoom);
-        }
+        string format = playersReadyCount == PhotonNetwork.CurrentRoom.PlayerCount ? MAX_PLAYERS_COUNT_FORMAT : PLAYERS_COUNT_FORMAT;
+
+        playersReadyText.text = string.Format(format, playersReadyCount, PhotonNetwork.CurrentRoom.PlayerCount);
+
     }
 
     #region Button Callbacks
-
     private void OnLeaveRoomButtonClicked()
     {
         Controller.OnLeaveRoomButtonClicked.Invoke();
@@ -97,9 +102,7 @@ public class RoomScreen : UIScreen<RoomScreenController>
 
     private void UpdateBottomButtons()
     {
-        bool isMaster = Controller.MasterClient == Controller.LocalPlayer;
-        startGameButton.gameObject.SetActive(isMaster);
-        readyButton.gameObject.SetActive(isMaster);
+        startGameButton.gameObject.SetActive(IsLocalPlayerMaster);
     }
 
     #region Player Management
@@ -112,92 +115,57 @@ public class RoomScreen : UIScreen<RoomScreenController>
 
     private void UpdatePlayerView(PlayerView view, Player player)
     {
-        if (player == null)
-        {
-            if (view.Player.UserId == player.UserId)
-            {
-                view.Clear();
-                return;
-            }
-            else if (view.Player != null)
-            {
-                Debug.LogError($"Attempted to clear {view.name}. It doesn't  belong to {player.NickName}. It belongs to {view.Player.NickName}");
-            }
-            else
-            {
-                Debug.LogError($"Attempted to clear {view.name}. It is already empty.");
-            }
-            return;
-        }
-
-        view.SetPlayer(player, player.IsLocal, player.IsMasterClient);
+        view.SetPlayer(player, IsLocalPlayerMaster);
     }
 
-    private void UpdatePlayerView(Player player)
-    {
-        foreach(PlayerView pv in playerViews)
-        {
-            if (pv.IsOccupied && pv.Player == player)
-            {
-                pv.SetPlayer(player, player == Controller.LocalPlayer, player.IsMasterClient);
-                break;
-            }
-        }
-    }
-
-    private void OnPlayerReadyStatusChanged(Player player)
+    private void OnPlayerReadyStatusChanged(Player changedPlayer)
     {
         bool isEveryoneReady = true;
+
+        foreach(Player player in PhotonNetwork.CurrentRoom.Players.Values)
+        {
+            isEveryoneReady &= (bool)player.CustomProperties[Constants.Networking.PLAYER_READY];
+        }
+
         foreach(PlayerView pv in playerViews)
         {
-            isEveryoneReady &= pv.IsOccupied && (bool)pv.Player.CustomProperties[Constants.Networking.PLAYER_READY];
-            if (pv.IsOccupied && pv.Player == player)
+            if (pv.IsOccupied && pv.Player == changedPlayer)
             {
-                pv.ChangePlayerStatus(player);
+                pv.ChangePlayerStatus();
                 continue;
             }
         }
 
-        UpdatePlayersCountText();
+        UpdatePlayersReadyText();
         startGameButton.interactable = isEveryoneReady;
-    }
-
-    private void OnMasterClientChanged(Player newMasterClient)
-    {
-        if (newMasterClient.IsLocal)
-        {
-            Controller.MasterClient = Controller.LocalPlayer;
-            UpdateBottomButtons();
-        }
-
-        UpdatePlayerView(newMasterClient);
     }
 
     private void OnPlayerJoined(RoomInfo info, Player player)
     {
         UpdateAvailableView(player);
-        Controller.PlayersInRoom.Add(player);
-        UpdatePlayersCountText();
+        UpdatePlayersReadyText();
     }
 
-    private void OnPlayerLeft(RoomInfo info, Player player)
+    private void OnPlayerLeft(Player playerWhoLeft)
     {
-        foreach (PlayerView pv in playerViews)
-        {
-            if (pv.IsOccupied && pv.Player == player)
-            {
-                pv.Clear();
-                break;
-            }
-        }
-        Controller.PlayersInRoom.Remove(player);
+        ClearPlayerViews();
 
-        if(Controller.MasterClient.UserId != player.UserId)
+        foreach(Player player in PhotonNetwork.CurrentRoom.Players.Values)
         {
-            OnMasterClientChanged(player);
+            UpdateAvailableView(player);
         }
 
-        UpdatePlayersCountText();
+        UpdateBottomButtons();
+
+        UpdatePlayersReadyText();
+    }
+
+    private void ClearPlayerViews()
+    {
+        foreach (PlayerView view in playerViews)
+        {
+            view.Clear();
+        }
     }
 
     private PlayerView GetAvailablePlayerView()

@@ -37,7 +37,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
     protected override void OnBeforeShow()
     {
         base.OnBeforeShow();
-        EventManager.OnRoomListUpdateEvent += OnRoomListUpdate;
+        EventManager.OnRoomListUpdateEvent.AddListener(OnRoomListUpdate);
         UpdateRoomListUI();
         UpdatePageButtons();
     }
@@ -45,7 +45,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
     protected override void OnBeforeHide()
     {
         base.OnBeforeHide();
-        EventManager.OnRoomListUpdateEvent -= OnRoomListUpdate;
+        EventManager.OnRoomListUpdateEvent.RemoveListener(OnRoomListUpdate);
     }
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -70,7 +70,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
             var room = availableRooms[i];
             int ping = PhotonNetwork.GetPing();
 
-            view.Initialize(room.GetRoomName(), ping, Controller.OnJoinClicked);
+            view.Initialize(room.Name, ping, Controller.OnJoinClicked);
             view.Activate();
         }
     }

@@ -4,19 +4,14 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 public class RoomView : Activateable
 {
-    private const string ROOM_NAME_FORMAT = "{0}'s room";
-    private const string LATENCY_FORMAT = "{0} ms";
-
     [SerializeField]
     private Button joinRoomButton;
     [SerializeField]
     private TextMeshProUGUI roomNameText;
     [SerializeField]
-    private TextMeshProUGUI latencyText;
-    [SerializeField]
     private TextMeshProUGUI gameModeName;
     [SerializeField]
-    private Image latencyImageFill;
+    private UILatency uiLatency;
     [SerializeField]
     private Image roomIcon;
     [SerializeField]
@@ -38,9 +33,9 @@ public class RoomView : Activateable
     public void Initialize(string roomName, int latency,
         UnityAction<string> onJoinRoomClicked)
     {
+        uiLatency.UpdateLatency(latency);
         this.roomName = roomName;
-        roomNameText.text = string.Format(ROOM_NAME_FORMAT, roomName);
-        latencyText.text = string.Format(LATENCY_FORMAT, latency);
+        roomNameText.text = roomName;
         this.onJoinRoomClicked = onJoinRoomClicked;
     }
 

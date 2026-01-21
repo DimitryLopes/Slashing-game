@@ -52,7 +52,7 @@ MonoBehaviour:
   - rid: 3587562670440316937
   outAnimations: []
   componentPriority: 0
-  animationTarget: {fileID: 0}
+  animationTarget: {fileID: 4866271470595366099}
   deactivateOnHide: 1
   activateOnShow: 1
   playAllAtOnce: 0
@@ -99,7 +99,7 @@ MonoBehaviour:
         customAnimationTarget: {fileID: 0}
         startAlpha: 0
         endAlpha: 1
-        canvasGroup: {fileID: 0}
+        canvasGroup: {fileID: 2493164617449840216}
 --- !u!1 &4866271470595366099
 GameObject:
   m_ObjectHideFlags: 0

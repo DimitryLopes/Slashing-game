@@ -9,7 +9,7 @@ public class LoadingScreen : UIScreen<LoadingScreenController>
     override protected void OnBeforeShow()
     {
         base.OnBeforeShow();
-        EventManager.OnLobbyJoinedEvent += Hide;
+        EventManager.OnLobbyJoinedEvent.AddListener(Hide);
         connectingIconAnimation.PlayInAnimations();
     }
 
@@ -27,7 +27,7 @@ public class LoadingScreen : UIScreen<LoadingScreenController>
     protected override void OnAfterHide()
     {
         base.OnAfterHide();
-        EventManager.OnLobbyJoinedEvent -= Hide;
+        EventManager.OnLobbyJoinedEvent.RemoveListener(Hide);
     }
     
 }

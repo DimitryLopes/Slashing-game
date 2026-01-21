@@ -24,5 +24,6 @@ public class Constants
         public const string PLAYER_PING = "ping";
         public const string PLAYER_READY = "ready";
         public const string ROOM_NAME = "name";
+        public const string ROOM_IS_PLAYING = "is playing";
     }
 }

@@ -3,8 +3,17 @@ using Photon.Realtime;
 
 public static class RoomExtensions
 {
-    public static string GetRoomName(this RoomInfo room)
+    public static void SetCustomProperty(this Room room, string key, object value)
     {
-        return (string)room.CustomProperties[Constants.Networking.ROOM_NAME];
+        var table = room.CustomProperties;
+        if (table.ContainsKey(key))
+        {
+            table[key] = value;
+        }
+        else
+        {
+            table.Add(key, value);
+        }
+        room.SetCustomProperties(table);
     }
 }

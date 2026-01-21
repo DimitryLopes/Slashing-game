@@ -50,24 +50,25 @@ public class PlayerView : MonoBehaviour
         kickPlayerButton.onClick.AddListener(OnPlayerKickButtonClick);
     }
 
-    public void SetPlayer(Player player, bool isLocalPlayer, bool isMasterClient)
+    public void SetPlayer(Player player, bool isMasterClient)
     {
-        bool shouldShowKickButton = !isLocalPlayer && isMasterClient;
+        bool shouldShowKickButton = !player.IsLocal && isMasterClient;
         kickPlayerButton.gameObject.SetActive(shouldShowKickButton);
-        masterClientIcon.SetActive(isMasterClient);
+        masterClientIcon.SetActive(player.IsMasterClient);
 
         associatedPlayer = player;
         float ping = player.GetPing();
         latency.UpdateLatency(ping);
         UpdatePlayerView();
         playerNameText.text = player.NickName;
+        ChangePlayerStatus();
     }
 
     #region Swap animation
 
-    public void ChangePlayerStatus(Player player)
+    public void ChangePlayerStatus()
     {
-        bool isReady = (bool)player.CustomProperties[Constants.Networking.PLAYER_READY];
+        bool isReady = (bool)associatedPlayer.CustomProperties[Constants.Networking.PLAYER_READY];
         StartSwapAnimation(isReady);
     }
 
@@ -77,6 +78,7 @@ public class PlayerView : MonoBehaviour
         Transform containerFrom = isReady ? notReadyContainer.transform : readyContainer.transform;
 
         containerTo.transform.SetParent(readyInfoContainer.transform, true);
+        containerTo.transform.SetAsFirstSibling();
         containerTo.gameObject.SetActive(true);
 
         containerFrom.transform.SetParent(swapAnimationContainer.transform, true);
@@ -84,6 +86,7 @@ public class PlayerView : MonoBehaviour
 
         TweenAnimationData data = new TweenAnimationData(swapAnimationContainer.gameObject,
             1, 0, swapAnimationDuration, OnSwapAnimationUpdate, OnSwapAnimationFinish);
+        TweenUtils.PlayTween(data);
 
         swapAnimationGlow.transform.LeanMoveLocalX(-swapGlowFinishLocaldX, swapAnimationDuration);
     }
