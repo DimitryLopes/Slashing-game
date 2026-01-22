@@ -1870,12 +1870,7 @@ MonoBehaviour:
     target: {fileID: 7700582168173456530, guid: 133edf1492b4ba348b0ed15f20a0fc6e, type: 3}
     minScore: 250
     maxScore: 2500
-  baseDifficultyData:
-    TargetSpawnInterval: 2
-    SpawnIntervalDecreaseRate: 10
-    SpawnIntervalDecreaseAmount: 0.1
-    MinSpawnInterval: 0.3
-    ScoreMultiplier: 1
+  difficultyProfile: {fileID: 11400000, guid: c710f6a29fa18a7478c3d673e8a4262d, type: 2}
 --- !u!1 &7663775732133519413
 GameObject:
   m_ObjectHideFlags: 0

@@ -70,7 +70,7 @@ public class LobbyScreen : UIScreen<LobbyScreenController>
             var room = availableRooms[i];
             int ping = PhotonNetwork.GetPing();
 
-            view.Initialize(room.Name, ping, Controller.OnJoinClicked);
+            view.Initialize(room.Name, ping, room.PlayerCount, room.MaxPlayers, Controller.OnJoinClicked);
             view.Activate();
         }
     }

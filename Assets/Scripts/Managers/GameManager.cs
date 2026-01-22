@@ -110,6 +110,7 @@ public class GameManager : MonoBehaviourPun
         if (scene.name == Constants.Scenes.MENU)
             ShowMainMenu();
     }
+
     #region Menu
     private void ShowMainMenu()
     {

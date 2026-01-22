@@ -128,11 +128,11 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     {
         targetData = data;
         IsCutted = false;
-        gameObject.SetActive(true);
         OnSetup(data);
         spriteRenderer.sprite = AssetService.GetTargetSprite(data.SpriteKey);
         transform.position = data.StartPosition;
         transform.localScale = Vector3.one * data.Size;
+        gameObject.SetActive(true);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

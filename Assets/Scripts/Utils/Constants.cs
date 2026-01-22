@@ -12,6 +12,11 @@ public class Constants
         public const string MENU = "Menu";
     }
 
+    public static class Targets
+    {
+        public const float DEFAULT_GRAVITY_SCALE = 1f;
+    }
+
     public static class Tags
     {
         public const string TARGET_TAG = "Target";

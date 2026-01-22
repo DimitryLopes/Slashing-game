@@ -48,7 +48,7 @@ public class BossTarget : Target
     protected override void OnSetup(TargetData data)
     {
         hp = maxHp;
-        IsCutted = false;
+        rb.gravityScale = Constants.Targets.DEFAULT_GRAVITY_SCALE;
     }
 
     protected override void OnHit(HitInfo hitInfo)

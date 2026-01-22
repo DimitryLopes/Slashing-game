@@ -5,33 +5,30 @@ using Photon.Pun;
 
 public class TargetSpawner : MonoBehaviour
 {
-    [SerializeField]
-    private List<TargetSpawnPoint> spawnPoints;
-    [SerializeField]
-    private List<TargetTemplate> targetTemplates;
-    [SerializeField]
-    private DifficultyData baseDifficultyData;
+    [SerializeField] private List<TargetSpawnPoint> spawnPoints;
+    [SerializeField] private List<TargetTemplate> targetTemplates;
+    [SerializeField] private DifficultyProfile difficultyProfile;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
-    private Dictionary<TargetType, List<Target>> intantiatedTargets;
+    private Dictionary<TargetType, List<Target>> instantiatedTargets;
 
-    private DifficultyData currentDifficultyData;
-    private float difficultyTimer;
+    private float elapsedTime;
     private float spawnTimer;
     private bool canSpawn;
 
+    private DifficultyPhase currentPhase;
 
     private void Awake()
     {
-        FillDictionary();
+        InitializeDatabases();
     }
 
     public void EnableSpawn()
     {
-        currentDifficultyData = new DifficultyData(baseDifficultyData);
+        elapsedTime = 0f;
         spawnTimer = 0f;
-        difficultyTimer = 0f;
         canSpawn = true;
+        currentPhase = difficultyProfile.phases[0];
     }
 
     public void DisableSpawn()
@@ -40,149 +37,158 @@ public class TargetSpawner : MonoBehaviour
         DeactivateAllTargets();
     }
 
-    private void FillDictionary()
+    private void Update()
     {
-        targetDatabase = new Dictionary<TargetType, TargetTemplate>();
-        foreach (var template in targetTemplates)
-        {
-            if (!targetDatabase.ContainsKey(template.type))
-            {
-                targetDatabase.Add(template.type, template);
-            }
-            else
-            {
-                Debug.LogWarning($"Duplicate target type found in database: {template.type}");
-            }
-        }
+        if (!canSpawn) return;
 
-        intantiatedTargets = new Dictionary<TargetType, List<Target>>();
-        foreach (TargetType type in Enum.GetValues(typeof(TargetType)))
+        elapsedTime += Time.deltaTime;
+        spawnTimer += Time.deltaTime;
+
+        currentPhase = difficultyProfile.GetPhase(elapsedTime);
+
+        if (spawnTimer < currentPhase.spawnInterval) return;
+
+        spawnTimer = 0f;
+
+        TargetType rolledType = RollSpawnType(currentPhase.spawnWeights);
+
+        if (!CanSpawnType(rolledType))
+            return;
+
+        switch (rolledType)
         {
-            intantiatedTargets[type] = new List<Target>();
+            case TargetType.SpecificPlayer:
+                int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+                SpawnPlayerTarget(rolledType, (byte)UnityEngine.Random.Range(1, playerCount));
+                break;
+            default:
+                SpawnTarget(rolledType);
+                break;
+
         }
     }
 
-    private void Update()
+    private void InitializeDatabases()
     {
-        /*
-        if(Input.GetKeyDown(KeyCode.Q))
+        targetDatabase = new Dictionary<TargetType, TargetTemplate>();
+        instantiatedTargets = new Dictionary<TargetType, List<Target>>();
+
+        foreach (var template in targetTemplates)
+            targetDatabase[template.type] = template;
+
+        foreach (TargetType type in Enum.GetValues(typeof(TargetType)))
+            instantiatedTargets[type] = new List<Target>();
+    }
+
+    private TargetType RollSpawnType(List<TargetSpawnWeight> weights)
+    {
+        float totalWeight = 0f;
+        foreach (var entry in weights)
+            totalWeight += entry.weight;
+
+        float roll = UnityEngine.Random.Range(0f, totalWeight);
+
+        float cumulative = 0f;
+        foreach (var entry in weights)
         {
-            SpawnTarget(TargetType.Default);
+            cumulative += entry.weight;
+            if (roll <= cumulative)
+                return entry.type;
         }
 
-        if(Input.GetKeyDown(KeyCode.W))
+        return weights[0].type;
+    }
+
+    private bool CanSpawnType(TargetType type)
+    {
+        int activeCount = 0;
+        foreach (var target in instantiatedTargets[type])
         {
-            SpawnTarget(TargetType.Explosive);
+            if (target.gameObject.activeInHierarchy)
+                activeCount++;
         }
 
-        if(Input.GetKeyDown(KeyCode.E))
+        foreach (var cap in currentPhase.activeCaps)
         {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, 1);
+            if (cap.type == type)
+                return activeCount < cap.maxActive;
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
-        }
-
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            SpawnTarget(TargetType.Boss);
-        }
-        */
-
-        if (!canSpawn) return;
-
-        spawnTimer += Time.deltaTime;
-        difficultyTimer += Time.deltaTime;
-        if (spawnTimer >= currentDifficultyData.TargetSpawnInterval)
-        {
-            spawnTimer = 0f;
-            
-            SpawnTarget(TargetType.Default);
-        }
-
-        if (difficultyTimer < currentDifficultyData.SpawnIntervalDecreaseRate) return;
-
-        difficultyTimer = 0f;
-        currentDifficultyData.TargetSpawnInterval = Mathf.Max(currentDifficultyData.MinSpawnInterval,
-            currentDifficultyData.TargetSpawnInterval - currentDifficultyData.SpawnIntervalDecreaseAmount);
+        return true;
     }
 
     private void SpawnTarget(TargetType type)
     {
-        TargetTemplate template = targetDatabase[type];
+        if (!targetDatabase.TryGetValue(type, out var template))
+            return;
 
-        if (template.target != null)
-        {
-            Target targetComponent = GetAvailableTarget<Target>(type);
-            if (targetComponent != null)
-            {
-                var spawnPoint = spawnPoints.GetRandom();
-                Vector2 launchDirection = spawnPoint.GetLaunchDirection();
-                TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, type.ToString(), template.minScore, template.maxScore, type);
-                targetComponent.Setup(targetData);
-            }
-        }
-        else
-        {
-            Debug.LogError($"{type} not found in the target database!");
-        }
+        Target target = GetAvailableTarget<Target>(type);
+        if (target == null)
+            return;
+
+        TargetSpawnPoint spawnPoint = spawnPoints.GetRandom();
+        Vector2 launchDirection = spawnPoint.GetLaunchDirection();
+
+        TargetData data = new TargetData(
+            1f,
+            1,
+            10,
+            spawnPoint.transform.position,
+            launchDirection,
+            type.ToString(),
+            template.minScore,
+            template.maxScore,
+            type
+        );
+
+        target.Setup(data);
     }
 
     private void SpawnPlayerTarget(TargetType type, byte player)
     {
         TargetTemplate template = targetDatabase[type];
-        if (template.target != null)
+
+        PlayerSpecificTarget targetComponent = GetAvailableTarget<PlayerSpecificTarget>(type);
+        if (targetComponent != null)
         {
-            PlayerSpecificTarget targetComponent = GetAvailableTarget<PlayerSpecificTarget>(type);
-            if (targetComponent != null)
-            {
-                var spawnPoint = spawnPoints.GetRandom();
-                Vector2 launchDirection = spawnPoint.GetLaunchDirection();
-                TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
-                    launchDirection, type.ToString(), template.minScore, template.maxScore, type);
-                targetComponent.Setup(targetData, player);
-            }
-        }
-        else
-        {
-            Debug.LogError($"{type} not found in the target database!");
+            var spawnPoint = spawnPoints.GetRandom();
+            Vector2 launchDirection = spawnPoint.GetLaunchDirection();
+            TargetData targetData = new TargetData(1.0f, 1, 10, spawnPoint.transform.position,
+                launchDirection, type.ToString(), template.minScore, template.maxScore, type);
+            targetComponent.Setup(targetData, player);
         }
     }
 
-
-    private T GetAvailableTarget<T>(TargetType targetType) where T : Target
+    private T GetAvailableTarget<T>(TargetType type) where T : Target
     {
-        foreach (T target in intantiatedTargets[targetType])
+        foreach (T target in instantiatedTargets[type])
         {
             if (!target.gameObject.activeInHierarchy)
-            {
                 return target;
-            }
         }
 
-        T newTarget = PhotonNetwork.Instantiate(
-                string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, targetType),
+        T newTarget = PhotonNetwork
+            .Instantiate(
+                string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, type),
                 transform.position,
                 Quaternion.identity
-            ).GetComponent<T>();
-        intantiatedTargets[targetType].Add(newTarget);
+            )
+            .GetComponent<T>();
+
+        instantiatedTargets[type].Add(newTarget);
         return newTarget;
     }
 
     private void DeactivateAllTargets()
     {
-        foreach (var kvp in intantiatedTargets)
+        foreach (var list in instantiatedTargets.Values)
         {
-            foreach (Target target in intantiatedTargets[kvp.Key])
-            {
+            foreach (var target in list)
                 target.gameObject.SetActive(false);
-            }
         }
     }
 }
+
 
 [Serializable]
 public struct TargetTemplate

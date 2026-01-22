@@ -1,5 +1,4 @@
 using Photon.Pun;
-using System;
 using UnityEngine;
 
 public class PlayerSpecificTarget : Target
