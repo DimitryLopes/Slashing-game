@@ -39,6 +39,33 @@ public class TargetSpawner : MonoBehaviour
 
     private void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            SpawnTarget(TargetType.Default);
+        }
+
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            SpawnTarget(TargetType.Explosive);
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            SpawnPlayerTarget(TargetType.SpecificPlayer, 1);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
+        }
+
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            SpawnTarget(TargetType.Boss);
+        }
+
+        return;
+
         if (!canSpawn) return;
 
         elapsedTime += Time.deltaTime;
@@ -59,7 +86,7 @@ public class TargetSpawner : MonoBehaviour
         {
             case TargetType.SpecificPlayer:
                 int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-                SpawnPlayerTarget(rolledType, (byte)UnityEngine.Random.Range(1, playerCount));
+                SpawnPlayerTarget(rolledType, UnityEngine.Random.Range(0, playerCount));
                 break;
             default:
                 SpawnTarget(rolledType);
@@ -144,7 +171,7 @@ public class TargetSpawner : MonoBehaviour
         target.Setup(data);
     }
 
-    private void SpawnPlayerTarget(TargetType type, byte player)
+    private void SpawnPlayerTarget(TargetType type, int player)
     {
         TargetTemplate template = targetDatabase[type];
 

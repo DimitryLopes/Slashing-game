@@ -51,6 +51,14 @@ public class GameManager : MonoBehaviourPun
         ChangeState(GameState.Menu);
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+
     public void ChangeState(GameState newState)
     {
         if (newState == CurrentState) return;

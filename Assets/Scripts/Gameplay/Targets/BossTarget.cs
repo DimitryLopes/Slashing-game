@@ -21,7 +21,7 @@ public class BossTarget : Target
         }
             
         ExecuteHit(info);
-        photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint);
+        photonView.RPC(nameof(RPCHit), RpcTarget.Others, info.Player, info.EntryPoint, info.ExitPoint, info.Score);
     }
 
     protected override void ExecuteHit(HitInfo info)
@@ -48,6 +48,7 @@ public class BossTarget : Target
     protected override void OnSetup(TargetData data)
     {
         hp = maxHp;
+        isSlowed = false;
         rb.gravityScale = Constants.Targets.DEFAULT_GRAVITY_SCALE;
     }
 

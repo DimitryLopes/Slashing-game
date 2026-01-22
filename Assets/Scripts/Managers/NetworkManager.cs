@@ -108,6 +108,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         room.SetCustomProperty(Constants.Networking.ROOM_IS_PLAYING, true);
         room.IsOpen = false;
     }
+
     private void KickPlayer(Player player)
     {
         PhotonNetwork.CloseConnection(player);
