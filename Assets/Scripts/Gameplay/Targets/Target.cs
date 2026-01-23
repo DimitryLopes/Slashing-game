@@ -35,7 +35,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     {
         Vector3 p = transform.position;
 
-        if (p.y < -12f || p.y > 12f || p.x < -10f || p.x > 12f)
+        if (p.y < -13f || p.y > 13f || p.x < -13f || p.x > 13f)
         {
             gameObject.SetActive(false);
             OnMiss();

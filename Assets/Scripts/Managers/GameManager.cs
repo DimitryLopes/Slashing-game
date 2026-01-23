@@ -166,6 +166,8 @@ public class GameManager : MonoBehaviourPun
 
     private void OnTargetHit(Target target, HitInfo info)
     {
+        if (target.IsCutted) return;
+
         switch (target.Data.Type)
         {
             case TargetType.Explosive:
