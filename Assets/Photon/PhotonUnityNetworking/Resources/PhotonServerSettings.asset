@@ -49,6 +49,7 @@ MonoBehaviour:
   - ExecuteHit
   - RPCSpecialSetup
   - UpdateBladePosition
+  - RPCUpdateLives
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

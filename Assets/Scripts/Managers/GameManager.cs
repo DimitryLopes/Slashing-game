@@ -166,8 +166,6 @@ public class GameManager : MonoBehaviourPun
 
     private void OnTargetHit(Target target, HitInfo info)
     {
-        if (target.IsCutted) return;
-
         switch (target.Data.Type)
         {
             case TargetType.Explosive:
@@ -195,10 +193,20 @@ public class GameManager : MonoBehaviourPun
 
     private void LoseLife()
     {
+
         if(Lives <= 0) return;
         Lives--;
+
+        photonView.RPC(nameof(RPCUpdateLives), RpcTarget.All, Lives);
+
+    }
+
+    [PunRPC]
+    private void RPCUpdateLives(int lives)
+    {
+        Lives = lives;
         EventManager.OnPlayerDamaged.Invoke(Lives);
-        if(Lives == 0)
+        if (Lives == 0)
         {
             Debug.Log("No lives left. Game Over!");
             ChangeState(GameState.EndGame);
@@ -207,6 +215,7 @@ public class GameManager : MonoBehaviourPun
         {
             Debug.Log($"Life lost! Remaining lives: {Lives}");
         }
+
     }
     #endregion
 }

@@ -105,7 +105,7 @@ public abstract class Target : MonoBehaviourPun, IPunObservable
     public void Setup(TargetData data)
     {
         ExecuteSetup(data);
-        if (photonView.IsMine) { }
+        if (photonView.IsMine)
             rb.velocity = data.LaunchDirection * data.Speed;
 
         photonView.RPC(nameof(RPCSetup), RpcTarget.Others, data.Size, data.Health,
