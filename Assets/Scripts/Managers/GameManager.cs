@@ -1,36 +1,23 @@
 using Photon.Pun;
-using System;
-using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 public class GameManager : MonoBehaviourPun
 {
-    //InGame state
     [SerializeField]
     private int initialLives = 3;
     [SerializeField]
     private TargetSpawner targetSpawner;
 
-    private float currentScore;
-
     public static GameManager Instance { get; private set; }
 
     public int Lives { get; private set; }
 
-
-    private GameState currentState = GameState.Initializing;
-
-    public GameState CurrentState
-    {
-        get => currentState;
-        private set
-        {
-            currentState = value;
-            OnGameStateChanged?.Invoke(currentState);
-        }
-    }
-
-    public event Action<GameState> OnGameStateChanged;
+    private float timeElapsed;
+    private int bossesDefeated;
+    private int targetsHit;
+    private float currentSessionScore;
+    private float currentPlayerScore;
 
     private void Awake()
     {
@@ -45,115 +32,56 @@ public class GameManager : MonoBehaviourPun
 
     private void Start()
     {
-        SceneManager.sceneLoaded += ChangeStateToInGame;
         EventManager.OnTargetHit.AddListener(OnTargetHit);
         EventManager.OnTargetMiss.AddListener(OnTargetMiss);
-        ChangeState(GameState.Menu);
     }
 
-    private void Update()
+
+    public void StartGame()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+        //TODO: GameScreen will spawn targets after 3 seconds
+        if (PhotonNetwork.IsMasterClient)
+            targetSpawner.EnableSpawn();
+
+        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
     }
 
-    public void ChangeState(GameState newState)
-    {
-        if (newState == CurrentState) return;
-
-        Debug.Log($"Changing state from {CurrentState} to {newState}");
-        CurrentState = newState;
-
-        switch (newState)
-        {
-            case GameState.Menu:
-                HandleMenuState();
-                break;
-            case GameState.Lobby:
-                HandleLobbyState();
-                break;
-            case GameState.Room:
-                HandleRoomState();
-                break;
-            case GameState.InGame:
-                StartCoroutine(HandleInGameState());
-                break;
-            case GameState.EndGame:
-                HandleEndGameState();
-                break;
-        }
-    }
-
-    private void HandleMenuState()
-    {
-        string sceneName = SceneManager.GetActiveScene().name;
-        if (sceneName != Constants.Scenes.MENU)
-            SceneManager.LoadScene(Constants.Scenes.MENU);
-        else
-            ShowMainMenu();
-    }
-
-    private void HandleLobbyState()
-    {
-        Debug.Log("Entered Lobby state.");
-    }
-
-    private void HandleRoomState()
-    {
-        Debug.Log("Entered Room state.");
-    }
-
-    private void HandleEndGameState()
+    public void EndGame()
     {
         targetSpawner.DisableSpawn();
-        ScreenManager.Instance.Show<GameOverScreen>(new GameOverScreenController(currentScore));
+        GameOverScreenController controller = new GameOverScreenController
+            (
+                currentSessionScore, timeElapsed, targetsHit, bossesDefeated,
+                OnPlayAgain, OnLobby, OnMainMenu
+            );
+
+        ScreenManager.Instance.Show<GameOverScreen>(controller);
+        ClearGameStats();
     }
 
-    private void ChangeStateToInGame(Scene scene, LoadSceneMode mode)
+    #region End Game Screen Callbacks
+    private void OnPlayAgain()
     {
-        if(scene.name == Constants.Scenes.GAME)
-        ChangeState(GameState.InGame);
-        if (scene.name == Constants.Scenes.MENU)
-            ShowMainMenu();
+        StateManager.Instance.ChangeState(GameState.Room);
     }
 
-    #region Menu
-    private void ShowMainMenu()
+    private void OnLobby()
     {
-        var controller = new MainMenuScreenController(ShowLobbyScreen,ShowSettingsScreen,Quit);
-        ScreenManager.Instance.Show<MainMenuScreen>(controller);
+        StateManager.Instance.ChangeState(GameState.Lobby);
     }
 
-    private void ShowLobbyScreen()
+    private void OnMainMenu()
     {
-        ScreenManager.Instance.Show<LoadingScreen>(new LoadingScreenController());
-        NetworkManager.Instance.Connect("a");
-    }
-
-    private void ShowSettingsScreen()
-    {
-
-    }
-
-    private void Quit()
-    {
-        Application.Quit();
+        StateManager.Instance.ChangeState(GameState.Menu);
     }
     #endregion
 
-    #region InGame
-    private IEnumerator HandleInGameState()
+    private void ClearGameStats()
     {
         Lives = initialLives;
-        currentScore = 0;
-        yield return new WaitForSeconds(3f);
-        if(PhotonNetwork.IsMasterClient)
-            targetSpawner.EnableSpawn();
-        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
-     }
-    
+        currentSessionScore = 0;
+    }
+
     private void OnTargetMiss(Target target)
     {
         switch (target.Data.Type)
@@ -181,8 +109,8 @@ public class GameManager : MonoBehaviourPun
                 break;
 
         }
-        currentScore += info.Score;
-        EventManager.OnScoreUpdated.Invoke(currentScore);
+        currentSessionScore += info.Score;
+        EventManager.OnScoreUpdated.Invoke(currentSessionScore);
     }
 
     [PunRPC]
@@ -194,7 +122,7 @@ public class GameManager : MonoBehaviourPun
     private void LoseLife()
     {
 
-        if(Lives <= 0) return;
+        if (Lives <= 0) return;
         Lives--;
 
         photonView.RPC(nameof(RPCUpdateLives), RpcTarget.All, Lives);
@@ -209,7 +137,7 @@ public class GameManager : MonoBehaviourPun
         if (Lives == 0)
         {
             Debug.Log("No lives left. Game Over!");
-            ChangeState(GameState.EndGame);
+            StateManager.Instance.ChangeState(GameState.EndGame);
         }
         else
         {
@@ -217,15 +145,4 @@ public class GameManager : MonoBehaviourPun
         }
 
     }
-    #endregion
-}
-
-public enum GameState
-{
-    Menu,
-    Lobby,
-    Room,
-    InGame,
-    EndGame,
-    Initializing
 }
