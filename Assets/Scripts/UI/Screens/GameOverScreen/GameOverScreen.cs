@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GameOverScreen : UIScreen<GameOverScreenController>
 {
@@ -28,10 +29,13 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
         mainMenuButton.onClick.AddListener(OnMainMenuGameButtonClick);
         playAgainButton.onClick.AddListener(OnPlayAgainButtonClicked);
 
-        scoreStatInfo.SetStatValue(Controller.ScoreStatValue);
-        targetStatInfo.SetStatValue(Controller.TargetStatValue);
-        bossStatInfo.SetStatValue(Controller.BossStatValue);
-        timeStatInfo.SetStatValue(Controller.TimeStatValue);
+        scoreStatInfo.SetStatValue(Controller.Score.ToString());
+        targetStatInfo.SetStatValue(Controller.TargetsHit.ToString());
+        bossStatInfo.SetStatValue(Controller.BossesDefeated.ToString());
+
+        TimeSpan time = TimeSpan.FromSeconds(Controller.ElapsedTime);
+        string minutesAndSeconds = time.ToString(@"m\:ss");
+        timeStatInfo.SetStatValue(minutesAndSeconds);
     }
 
     private void OnRoomScreenButtonClick()
