@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviourPun
     private float currentSessionScore;
     private float currentPlayerScore;
 
+    private bool isPlaying = false;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviourPun
         if (PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
 
+        isPlaying = true;
         ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
     }
 
@@ -57,6 +60,12 @@ public class GameManager : MonoBehaviourPun
 
         ScreenManager.Instance.Show<GameOverScreen>(controller);
         ClearGameStats();
+    }
+
+    private void Update()
+    {
+        if (!isPlaying) return;
+        timeElapsed += Time.deltaTime;
     }
 
     #region End Game Screen Callbacks
@@ -80,6 +89,10 @@ public class GameManager : MonoBehaviourPun
     {
         Lives = initialLives;
         currentSessionScore = 0;
+        timeElapsed = 0;
+        targetsHit = 0;
+        bossesDefeated = 0;   
+        isPlaying = false;
     }
 
     private void OnTargetMiss(Target target)
@@ -109,6 +122,15 @@ public class GameManager : MonoBehaviourPun
                 break;
 
         }
+        if(info.Player == PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            targetsHit++;
+            currentPlayerScore =+ info.Score;
+            if (target.Data.Type == TargetType.Boss)
+            {
+                bossesDefeated++;
+            }
+        }
         currentSessionScore += info.Score;
         EventManager.OnScoreUpdated.Invoke(currentSessionScore);
     }
@@ -121,12 +143,10 @@ public class GameManager : MonoBehaviourPun
 
     private void LoseLife()
     {
-
         if (Lives <= 0) return;
         Lives--;
 
         photonView.RPC(nameof(RPCUpdateLives), RpcTarget.All, Lives);
-
     }
 
     [PunRPC]
