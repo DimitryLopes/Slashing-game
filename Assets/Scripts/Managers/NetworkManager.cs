@@ -159,6 +159,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Player localPlayer = PhotonNetwork.LocalPlayer;
         float ping = PhotonNetwork.GetPing();
         localPlayer.SetCustomProperty(Constants.Networking.PLAYER_PING, ping);
+        localPlayer.SetCustomProperty(Constants.Networking.PLAYER_READY, false);
 
         RoomScreenController controller = new RoomScreenController(
             LeaveRoom,
