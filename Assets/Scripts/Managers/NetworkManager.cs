@@ -56,7 +56,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.CreateCustomProperties(PhotonNetwork.GetPing(), false);
         EventManager.OnLobbyJoinedEvent.Invoke();
         PhotonNetwork.NickName = PhotonNetwork.LocalPlayer.UserId;
-        ShowLobbyScreen();
+        StateManager.Instance.ChangeState(GameState.Lobby);
     }
 
     public void CreateRoom()
@@ -114,6 +114,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CloseConnection(player);
     }
     #endregion
+
     private void LoadGameScene()
     {
         PhotonNetwork.LoadLevel(Constants.Scenes.GAME);
@@ -150,6 +151,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
+        StateManager.Instance.ChangeState(GameState.Room);
+    }
+
+    public void ShowRoomScreen()
+    {
         Player localPlayer = PhotonNetwork.LocalPlayer;
         float ping = PhotonNetwork.GetPing();
         localPlayer.SetCustomProperty(Constants.Networking.PLAYER_PING, ping);
@@ -159,7 +165,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             ToggleReady,
             StartGame,
             KickPlayer);
-            
+
         ScreenManager.Instance.Show<RoomScreen>(controller);
 
         EventManager.OnJoinedRoomEvent?.Invoke(PhotonNetwork.CurrentRoom);

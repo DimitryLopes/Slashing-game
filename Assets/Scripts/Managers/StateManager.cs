@@ -83,12 +83,12 @@ public class StateManager : MonoBehaviour
 
     private void HandleLobbyState()
     {
-        Debug.Log("Entered Lobby state.");
+        NetworkManager.Instance.ShowLobbyScreen();
     }
 
     private void HandleRoomState()
     {
-        Debug.Log("Entered Room state.");
+        NetworkManager.Instance.ShowRoomScreen();
     }
 
     private void HandleEndGameState()

@@ -307,6 +307,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2727438470055833249}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1420067877288835821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4878207480135001435}
+  m_Layer: 0
+  m_Name: TargetContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4878207480135001435
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1420067877288835821}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2727438470055833249}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1882514313205424021
 GameObject:
   m_ObjectHideFlags: 0
@@ -1802,6 +1833,7 @@ Transform:
   - {fileID: 1856267181092090140}
   - {fileID: 2017590231347929919}
   - {fileID: 3761594916752224273}
+  - {fileID: 4878207480135001435}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6632612325581695092
@@ -1871,6 +1903,7 @@ MonoBehaviour:
     minScore: 250
     maxScore: 2500
   difficultyProfile: {fileID: 11400000, guid: c710f6a29fa18a7478c3d673e8a4262d, type: 2}
+  spawnContainer: {fileID: 4878207480135001435}
 --- !u!1 &7663775732133519413
 GameObject:
   m_ObjectHideFlags: 0

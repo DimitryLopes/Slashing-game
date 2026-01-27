@@ -8,6 +8,7 @@ public class TargetSpawner : MonoBehaviour
     [SerializeField] private List<TargetSpawnPoint> spawnPoints;
     [SerializeField] private List<TargetTemplate> targetTemplates;
     [SerializeField] private DifficultyProfile difficultyProfile;
+    [SerializeField] private Transform spawnContainer;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
     private Dictionary<TargetType, List<Target>> instantiatedTargets;
@@ -201,7 +202,7 @@ public class TargetSpawner : MonoBehaviour
                 Quaternion.identity
             )
             .GetComponent<T>();
-
+        newTarget.transform.SetParent(spawnContainer);
         instantiatedTargets[type].Add(newTarget);
         return newTarget;
     }

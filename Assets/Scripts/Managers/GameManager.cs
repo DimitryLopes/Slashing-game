@@ -1,5 +1,4 @@
 using Photon.Pun;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourPun
@@ -41,6 +40,7 @@ public class GameManager : MonoBehaviourPun
 
     public void StartGame()
     {
+        ClearGameStats();
         //TODO: GameScreen will spawn targets after 3 seconds
         if (PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
