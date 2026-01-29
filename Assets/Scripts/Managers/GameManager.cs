@@ -1,7 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class GameManager : MonoBehaviourPun
+public class GameManager : MonoBehaviourPun, IManager
 {
     [SerializeField]
     private int initialLives = 3;
@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviourPun
     public static GameManager Instance { get; private set; }
 
     public int Lives { get; private set; }
+
+    public bool IsInitialized { get; private set; }
 
     private float timeElapsed;
     private int bossesDefeated;
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviourPun
         }
 
         Instance = this;
+        IsInitialized = true;
     }
 
     private void Start()

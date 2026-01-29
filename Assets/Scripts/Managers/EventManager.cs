@@ -4,15 +4,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using Photon.Realtime;
 
-public class EventManager : MonoBehaviour
+public class EventManager : MonoBehaviour, IManager
 {
     public static EventManager Instance;
+    public bool IsInitialized { get; private set; } = false;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            IsInitialized = true;
             return;
         }
         Destroy(gameObject);
@@ -37,5 +39,6 @@ public class EventManager : MonoBehaviour
     public static UnityEvent<Player> OnPlayerLeftRoomEvent = new UnityEvent<Player>();
     public static UnityEvent<RoomInfo> OnJoinedRoomEvent = new UnityEvent<RoomInfo>();
     public static UnityEvent<Player> OnPlayerReadyStatusChanged = new UnityEvent<Player>();
+
     //public static Action<string> OnJoinRoomFailedEvent;
 }

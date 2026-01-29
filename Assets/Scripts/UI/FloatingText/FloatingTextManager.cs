@@ -1,28 +1,28 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FloatingTextManager : MonoBehaviour
+public class FloatingTextManager : MonoBehaviour, IManager
 {
     [SerializeField]
     private FloatingText floatingTextPrefab;
     [SerializeField]
-    private Transform canvasTransform;
+    private Transform floatingTextContainer;
     
     private List<FloatingText> floatingTextPool = new List<FloatingText>();
 
     public static FloatingTextManager Instance { get; private set; }
+    public bool IsInitialized { get; private set; }
 
     private void Awake()
     {
-        if(Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        IsInitialized = true;
     }
 
     public void ShowFloatingText(string message, Vector3 worldPosition)
@@ -42,7 +42,7 @@ public class FloatingTextManager : MonoBehaviour
             }
         }
 
-        FloatingText newFloatingText = Instantiate(floatingTextPrefab, canvasTransform);
+        FloatingText newFloatingText = Instantiate(floatingTextPrefab, floatingTextContainer);
         floatingTextPool.Add(newFloatingText);
         newFloatingText.Activate();
         return newFloatingText;

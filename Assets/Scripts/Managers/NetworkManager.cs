@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NetworkManager : MonoBehaviourPunCallbacks
+public class NetworkManager : MonoBehaviourPunCallbacks, IManager
 {
     public const int ROOM_REFRESH_INTERVAL = 5;
     public const string ROOM_NAME_SUFIX = "'s Room";
@@ -12,16 +12,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public static NetworkManager Instance { get; private set; }
     private float RoomRefreshTimer = 0f;
 
+    private bool shouldJoinLobbyImmediatelyAfterLeavingRoom = false;
+    public bool IsInitialized { get; private set; }
+
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        IsInitialized = true;
     }
 
     private void Update()
@@ -32,7 +35,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ShowLobbyScreen()
+    public void JoinLobby()
+    {
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+            shouldJoinLobbyImmediatelyAfterLeavingRoom = true;
+            return;
+        }
+
+        ShowLobbyScreen();
+    }
+
+    private void ShowLobbyScreen()
     {
         var controller = new LobbyScreenController(JoinRoom, LeaveRoom, CreateRoom, RefreshRooms);
         ScreenManager.Instance.Show<LobbyScreen>(controller);
@@ -142,6 +157,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         base.OnPlayerLeftRoom(otherPlayer);
         PhotonNetwork.LocalPlayer.SetCustomProperty(Constants.Networking.PLAYER_READY, false);
         EventManager.OnPlayerLeftRoomEvent.Invoke(otherPlayer);
+
+        if (shouldJoinLobbyImmediatelyAfterLeavingRoom)
+        {
+            ShowLobbyScreen();
+        }
+
+        shouldJoinLobbyImmediatelyAfterLeavingRoom = false;
     }
 
     public override void OnPlayerEnteredRoom(Player otherPlayer)
@@ -154,13 +176,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         StateManager.Instance.ChangeState(GameState.Room);
     }
 
-    public void ShowRoomScreen()
+    public void ShowRoom()
     {
         Player localPlayer = PhotonNetwork.LocalPlayer;
         float ping = PhotonNetwork.GetPing();
         localPlayer.SetCustomProperty(Constants.Networking.PLAYER_PING, ping);
         localPlayer.SetCustomProperty(Constants.Networking.PLAYER_READY, false);
 
+        ShowRoomScreen();
+    }
+
+    private void ShowRoomScreen()
+    {
         RoomScreenController controller = new RoomScreenController(
             LeaveRoom,
             ToggleReady,

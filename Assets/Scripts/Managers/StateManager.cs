@@ -2,11 +2,13 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StateManager : MonoBehaviour
+public class StateManager : MonoBehaviour, IManager
 {
     public static StateManager Instance { get; private set; }
 
     private GameState currentState = GameState.Initializing;
+
+    public bool IsInitialized { get; private set; }
 
     public GameState CurrentState
     {
@@ -29,12 +31,8 @@ public class StateManager : MonoBehaviour
         }
 
         Instance = this;
-    }
-
-    private void Start()
-    {
-        SceneManager.sceneLoaded += ChangeStateToInGame;
-        ChangeState(GameState.Menu);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        IsInitialized = true;
     }
 
     private void Update()
@@ -83,12 +81,12 @@ public class StateManager : MonoBehaviour
 
     private void HandleLobbyState()
     {
-        NetworkManager.Instance.ShowLobbyScreen();
+        NetworkManager.Instance.JoinLobby();
     }
 
     private void HandleRoomState()
     {
-        NetworkManager.Instance.ShowRoomScreen();
+        NetworkManager.Instance.ShowRoom();
     }
 
     private void HandleEndGameState()
@@ -96,10 +94,10 @@ public class StateManager : MonoBehaviour
         GameManager.Instance.EndGame();
     }
 
-    private void ChangeStateToInGame(Scene scene, LoadSceneMode mode)
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if(scene.name == Constants.Scenes.GAME)
-        ChangeState(GameState.InGame);
+            ChangeState(GameState.InGame);
         if (scene.name == Constants.Scenes.MENU)
             ShowMainMenu();
     }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScreenManager : MonoBehaviour
+public class ScreenManager : MonoBehaviour , IManager
 {
     [SerializeField]
     private ScreenDataBase screenDataBase;
@@ -10,16 +10,19 @@ public class ScreenManager : MonoBehaviour
     private Transform screenContainer;
 
     public static ScreenManager Instance { get; private set; }
+    public bool IsInitialized { get; private set; }
 
     private void Awake()
     {
-        if(Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         screenDataBase.SetUp();
         Instance = this;
+        IsInitialized = true;
     }
 
     private readonly Dictionary<Type, IScreen> instantiatedScreens = new();
@@ -32,7 +35,7 @@ public class ScreenManager : MonoBehaviour
     private void Start()
     {
         EventManager.OnScreenBeforeShowEvent.AddListener(OnScreenShown);
-        EventManager.OnScreenAfterHideEvent.AddListener(OnScreenHidden);
+        EventManager.OnScreenAfterHideEvent.AddListener(OnScreenHidden);    
     }
 
     private void OnScreenShown(IScreen screen)

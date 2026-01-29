@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIAnimationManager : MonoBehaviour
+public class UIAnimationManager : MonoBehaviour, IManager
 {
     public static UIAnimationManager Instance;
 
+    public bool IsInitialized { get; private set; }
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -12,7 +13,9 @@ public class UIAnimationManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
+        IsInitialized = true;
     }
 
     private Dictionary<GameObject, List<UIAnimation>> activeAnimations = new();
