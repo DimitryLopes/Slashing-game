@@ -16,7 +16,7 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
     [SerializeField]
     private Button roomScreenButton; //takes back to lobby screen
     [SerializeField]
-    private Button mainMenuButton; //takes back to main menu
+    private Button leaveButton; //takes back to main menu
     [SerializeField]
     private Button playAgainButton; //takes back to game screen
 
@@ -25,7 +25,7 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
     {
         base.OnBeforeShow();
         roomScreenButton.onClick.AddListener(OnRoomScreenButtonClick);
-        mainMenuButton.onClick.AddListener(OnMainMenuGameButtonClick);
+        leaveButton.onClick.AddListener(OnMainMenuGameButtonClick);
         playAgainButton.onClick.AddListener(OnPlayAgainButtonClicked);
 
         scoreStatInfo.SetStatValue(Controller.Score.ToString());
@@ -39,15 +39,18 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
 
     private void OnRoomScreenButtonClick()
     {
+        Hide();
         Controller.OnLobbyButtonClicked.Invoke();
     }
     private void OnPlayAgainButtonClicked()
     {
+        Hide();
         Controller.OnPlayAgainButtonClicked.Invoke();
     }
 
     private void OnMainMenuGameButtonClick()
     {
+        Hide();
         Controller.OnMainMenuButtonClicked.Invoke();
     }
 }

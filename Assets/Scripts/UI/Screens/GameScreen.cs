@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -17,9 +15,9 @@ public class GameScreen : UIScreen<GameScreenController>
 
     protected override void OnBeforeShow()
     {
-        base.OnBeforeShow();
-        UpdateLives(Controller.PlayerMaxLives);
-        UpdateScore(0);
+        base.OnBeforeShow();        
+        UpdateLives(Controller.PlayerMaxLives); 
+        ClearScore();
         EventManager.OnPlayerDamaged.AddListener(UpdateLives);
         EventManager.OnScoreUpdated.AddListener(UpdateScore);
     }
@@ -29,7 +27,13 @@ public class GameScreen : UIScreen<GameScreenController>
         livesText.text = string.Format(LIVES_TEXT_FORMAT, lives);
     }
 
-    public void UpdateScore(float score)
+    private void ClearScore()
+    {
+        previousScore = 0;
+        scoreText.text = string.Format(SCORE_TEXT_FORMAT, 0);
+    }
+
+    private void UpdateScore(float score)
     {
         scoreText.AnimateToValue((int) score, (int)previousScore, SCORE_TEXT_FORMAT);
         previousScore = score;

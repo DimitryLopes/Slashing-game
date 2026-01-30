@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviourPun, IManager
     public void StartGame()
     {
         ClearGameStats();
-        //TODO: GameScreen will spawn targets after 3 seconds
+
         if (PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
 
@@ -58,9 +58,10 @@ public class GameManager : MonoBehaviourPun, IManager
         GameOverScreenController controller = new GameOverScreenController
             (
                 currentSessionScore, timeElapsed, targetsHit, bossesDefeated,
-                OnPlayAgain, OnLobby, OnMainMenu
+                OnPlayAgain, OnMainMenu, OnLobby
             );
 
+        ScreenManager.Instance.HideAll();
         ScreenManager.Instance.Show<GameOverScreen>(controller);
         ClearGameStats();
     }
