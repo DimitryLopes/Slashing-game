@@ -19,15 +19,15 @@ public class MainMenuScreen : UIScreen<MainMenuScreenController>
 
     private void OnPlayButtonClicked()
     {
-        Controller.OnPlayButtonClicked();
+        Controller?.OnPlayButtonClicked();
     }
     private void OnSettingsButtonClicked()
     {
-        Controller.OnSettingsButtonClicked();
+        Controller?.OnSettingsButtonClicked();
     }
     private void OnExitButtonClicked()
     {
-        Controller.OnExitButtonClicked();
+        Controller?.OnExitButtonClicked();
     }
 
 }

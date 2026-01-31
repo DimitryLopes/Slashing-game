@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class LoadingScreen : UIScreen<LoadingScreenController>
 {
     [SerializeField]
@@ -9,13 +9,14 @@ public class LoadingScreen : UIScreen<LoadingScreenController>
     override protected void OnBeforeShow()
     {
         base.OnBeforeShow();
-        EventManager.OnLobbyJoinedEvent.AddListener(Hide);
+        SceneManager.sceneLoaded += HideOnSceneLoad;
         connectingIconAnimation.PlayInAnimations();
     }
 
     protected override void OnAfterShow()
     {
         base.OnAfterShow();
+        Controller.OnScreenAfterShow.Invoke();
     }
 
     protected override void OnBeforeHide()
@@ -29,5 +30,11 @@ public class LoadingScreen : UIScreen<LoadingScreenController>
         base.OnAfterHide();
         EventManager.OnLobbyJoinedEvent.RemoveListener(Hide);
     }
-    
+
+    private void HideOnSceneLoad(Scene scene, LoadSceneMode mode)
+    {
+        Hide();
+        SceneManager.sceneLoaded -= HideOnSceneLoad;
+    }
+
 }

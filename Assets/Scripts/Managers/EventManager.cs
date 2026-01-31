@@ -30,7 +30,7 @@ public class EventManager : MonoBehaviour, IManager
     public static UnityEvent<Target, HitInfo> OnTargetHit = new UnityEvent<Target, HitInfo>();
     public static UnityEvent<Target> OnTargetMiss = new UnityEvent<Target>();
 
-    public static UnityEvent OnConnectedToMasterEvent = new UnityEvent();
+    //public static UnityEvent OnConnectedToMasterEvent = new UnityEvent();
     public static UnityEvent OnLobbyJoinedEvent = new UnityEvent();
     //Lobby Screen
     public static UnityEvent<List<RoomInfo>> OnRoomListUpdateEvent = new UnityEvent<List<RoomInfo>>();

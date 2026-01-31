@@ -74,9 +74,17 @@ public class StateManager : MonoBehaviour, IManager
     {
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName != Constants.Scenes.MENU)
-            SceneManager.LoadScene(Constants.Scenes.MENU);
+        {
+            var controller = new LoadingScreenController(ShowMenu);
+            ScreenManager.Instance.Show<LoadingScreen>(controller);
+        }
         else
             ShowMainMenu();
+
+        void ShowMenu()
+        {
+            SceneManager.LoadScene(Constants.Scenes.MENU);
+        }
     }
 
     private void HandleLobbyState()
@@ -105,14 +113,26 @@ public class StateManager : MonoBehaviour, IManager
     #region Menu
     private void ShowMainMenu()
     {
-        var controller = new MainMenuScreenController(ShowLobbyScreen,ShowSettingsScreen,Quit);
+        var controller = new MainMenuScreenController(ShowLobbyScreen, ShowSettingsScreen, Quit);
         ScreenManager.Instance.Show<MainMenuScreen>(controller);
     }
 
     private void ShowLobbyScreen()
     {
-        ScreenManager.Instance.Show<LoadingScreen>(new LoadingScreenController());
-        NetworkManager.Instance.Connect("a");
+        LoadingScreenController controller = new LoadingScreenController(Connect);
+        ScreenManager.Instance.Show<LoadingScreen>(controller);
+        
+    }
+
+    private void Connect()
+    {        
+        if (!NetworkManager.Instance.IsConected)
+        {
+            NetworkManager.Instance.Connect("a");
+            return;
+        }
+
+        NetworkManager.Instance.JoinLobby();
     }
 
     private void ShowSettingsScreen()

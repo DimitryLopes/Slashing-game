@@ -1,6 +1,5 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +13,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     private bool shouldJoinLobbyImmediatelyAfterLeavingRoom = false;
     public bool IsInitialized { get; private set; }
+    public bool IsConected => PhotonNetwork.IsConnected;
 
     private void Awake()
     {
@@ -55,6 +55,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IManager
 
     public void Connect(string playerName)
     {
+        if (PhotonNetwork.IsConnected) return;
+
         PhotonNetwork.NickName = playerName;
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.GameVersion = "don't let this make into the final build"; //TODO: remove hardcoded version
@@ -63,7 +65,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks, IManager
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
-        EventManager.OnConnectedToMasterEvent?.Invoke();
+        //EventManager.OnConnectedToMasterEvent?.Invoke();
     }
 
     public override void OnJoinedLobby()

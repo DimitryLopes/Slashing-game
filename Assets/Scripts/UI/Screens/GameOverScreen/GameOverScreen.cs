@@ -39,18 +39,15 @@ public class GameOverScreen : UIScreen<GameOverScreenController>
 
     private void OnRoomScreenButtonClick()
     {
-        Hide();
         Controller.OnLobbyButtonClicked.Invoke();
     }
     private void OnPlayAgainButtonClicked()
     {
-        Hide();
         Controller.OnPlayAgainButtonClicked.Invoke();
     }
 
     private void OnMainMenuGameButtonClick()
     {
-        Hide();
         Controller.OnMainMenuButtonClicked.Invoke();
     }
 }
