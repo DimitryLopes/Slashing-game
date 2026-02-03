@@ -7,11 +7,11 @@ public class GameManager : MonoBehaviourPun, IManager
     private int initialLives = 3;
     [SerializeField]
     private TargetSpawner targetSpawner;
+    [SerializeField]
+    private SliceAreaPosition[] sliceAreaPresets;
 
     public static GameManager Instance { get; private set; }
-
     public int Lives { get; private set; }
-
     public bool IsInitialized { get; private set; }
 
     private float timeElapsed;
@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviourPun, IManager
         EventManager.OnTargetMiss.AddListener(OnTargetMiss);
     }
 
-
     public void StartGame()
     {
         ClearGameStats();
@@ -66,11 +65,47 @@ public class GameManager : MonoBehaviourPun, IManager
         ClearGameStats();
     }
 
+    private void ClearGameStats()
+    {
+        Lives = initialLives;
+        currentSessionScore = 0;
+        timeElapsed = 0;
+        targetsHit = 0;
+        bossesDefeated = 0;
+        isPlaying = false;
+    }
+
     private void Update()
     {
         if (!isPlaying) return;
         timeElapsed += Time.deltaTime;
     }
+
+    #region Slice Area
+    private void AssignSliceAreas()
+    {
+        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+
+        // Find the preset for the current player count
+        SliceAreaPosition preset = sliceAreaPresets[playerCount -1];
+
+        // Assign positions to each player
+        for (int i = 0; i < playerCount; i++)
+        {
+            int playerId = PhotonNetwork.PlayerList[i].ActorNumber;
+            Vector3 position = preset.positions[i];
+
+            // Instantiate the slice area for the local player
+            if (playerId == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                CreateSliceArea(position, true);
+            }
+
+            // Notify other clients to create their slice areas
+            photonView.RPC(nameof(RPCUpdateSliceArea), PhotonNetwork.PlayerList[i], position);
+        }
+    }
+    #endregion
 
     #region End Game Screen Callbacks
     private void OnPlayAgain()
@@ -89,16 +124,7 @@ public class GameManager : MonoBehaviourPun, IManager
     }
     #endregion
 
-    private void ClearGameStats()
-    {
-        Lives = initialLives;
-        currentSessionScore = 0;
-        timeElapsed = 0;
-        targetsHit = 0;
-        bossesDefeated = 0;   
-        isPlaying = false;
-    }
-
+    #region Target Events
     private void OnTargetMiss(Target target)
     {
         switch (target.Data.Type)
@@ -138,6 +164,9 @@ public class GameManager : MonoBehaviourPun, IManager
         currentSessionScore += info.Score;
         EventManager.OnScoreUpdated.Invoke(currentSessionScore);
     }
+    #endregion
+
+    #region Lives
 
     [PunRPC]
     private void RPCLoseLife()
@@ -169,4 +198,5 @@ public class GameManager : MonoBehaviourPun, IManager
         }
 
     }
+    #endregion
 }
