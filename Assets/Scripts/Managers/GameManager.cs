@@ -1,4 +1,6 @@
 using Photon.Pun;
+using Photon.Realtime;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviourPun, IManager
@@ -7,11 +9,16 @@ public class GameManager : MonoBehaviourPun, IManager
     private int initialLives = 3;
     [SerializeField]
     private TargetSpawner targetSpawner;
+    [SerializeField, Header("Slice Areas")]
+    private SliceArea sliceAreaPrefab;
+    [SerializeField]
+    private Transform sliceAreaContainer;
     [SerializeField]
     private SliceAreaPosition[] sliceAreaPresets;
 
     public static GameManager Instance { get; private set; }
     public int Lives { get; private set; }
+    private List<SliceArea> sliceAreas = new List<SliceArea>();
     public bool IsInitialized { get; private set; }
 
     private float timeElapsed;
@@ -86,24 +93,31 @@ public class GameManager : MonoBehaviourPun, IManager
     {
         int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
 
-        // Find the preset for the current player count
         SliceAreaPosition preset = sliceAreaPresets[playerCount -1];
 
-        // Assign positions to each player
-        for (int i = 0; i < playerCount; i++)
+        var players = PhotonNetwork.CurrentRoom.Players.Values;
+        foreach (Player player in players)
         {
-            int playerId = PhotonNetwork.PlayerList[i].ActorNumber;
-            Vector3 position = preset.positions[i];
-
-            // Instantiate the slice area for the local player
-            if (playerId == PhotonNetwork.LocalPlayer.ActorNumber)
-            {
-                CreateSliceArea(position, true);
-            }
-
-            // Notify other clients to create their slice areas
-            photonView.RPC(nameof(RPCUpdateSliceArea), PhotonNetwork.PlayerList[i], position);
+            int playerId = player.ActorNumber;
+            Vector3 position = preset.positions[playerId - 1];
+            var area = GetSliceArea();
+            bool isLocal = playerId == PhotonNetwork.LocalPlayer.ActorNumber;
+            area.Initialize(playerId, isLocal);
         }
+    }
+
+    private SliceArea GetSliceArea()
+    {
+        foreach(var area in sliceAreas)
+        {
+            if (area.IsActive) continue;
+
+            return area;
+        }
+
+        SliceArea sliceArea = Instantiate(sliceAreaPrefab, sliceAreaContainer);
+        sliceAreas.Add(sliceArea);
+        return sliceArea;
     }
     #endregion
 

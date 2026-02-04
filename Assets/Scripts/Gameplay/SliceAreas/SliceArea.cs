@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SliceArea : MonoBehaviour
+public class SliceArea : Activateable
 {
     [Header("Area Settings")]
     [SerializeField] private Color areaColor = Color.green;
@@ -13,11 +13,11 @@ public class SliceArea : MonoBehaviour
 
     private int moveTweenId = -1;
 
-    public byte OwnerId { get; private set; }
+    public int OwnerId { get; private set; }
     public bool IsLocalPlayerArea { get; private set; }
     public Vector3[] Vertices => vertices;
 
-    public void Initialize(byte ownerId, Vector3[] initialVertices, bool isLocal)
+    public void Initialize(int ownerId, Vector3[] initialVertices, bool isLocal)
     {
         OwnerId = ownerId;
         IsLocalPlayerArea = isLocal;
