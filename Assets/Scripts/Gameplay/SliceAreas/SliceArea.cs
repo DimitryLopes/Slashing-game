@@ -12,6 +12,7 @@ public class SliceArea : Activateable
     private readonly Vector3[] targetVertices = new Vector3[4];
 
     private int moveTweenId = -1;
+    public bool IsMoving => moveTweenId != -1;
 
     public int OwnerId { get; private set; }
     public bool IsLocalPlayerArea { get; private set; }

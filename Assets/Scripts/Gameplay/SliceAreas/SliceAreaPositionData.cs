@@ -1,19 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class SliceAreaData : MonoBehaviour
-{
-    [SerializeField]
-    private int playerCount;
-    [SerializeField]
-    private List<SliceAreaPositionData> sliceAreaPositions;
-    [SerializeField]
-    private SliceAreaPosition startingSliceAreaPosition;
-
-    public int PlayerCount => playerCount;
-}
-
+[Serializable]
 public class SliceAreaPositionData
 {
     [SerializeField]

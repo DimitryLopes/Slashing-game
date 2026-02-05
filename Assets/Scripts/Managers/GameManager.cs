@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviourPun, IManager
     [SerializeField]
     private Transform sliceAreaContainer;
     [SerializeField]
-    private SliceAreaPosition[] sliceAreaPresets;
+    private SliceAreaData[] sliceAreaPresets;
 
     public static GameManager Instance { get; private set; }
     public int Lives { get; private set; }
@@ -86,31 +86,49 @@ public class GameManager : MonoBehaviourPun, IManager
     {
         if (!isPlaying) return;
         timeElapsed += Time.deltaTime;
+
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+            AssignSliceAreas();
+        }
     }
 
     #region Slice Area
     private void AssignSliceAreas()
     {
-        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
-
-        SliceAreaPosition preset = sliceAreaPresets[playerCount -1];
+        SliceAreaData preset = GetSliceAreaPreset();
+        SliceAreaPositionData startingData = preset.StartingSliceArea; 
 
         var players = PhotonNetwork.CurrentRoom.Players.Values;
-        foreach (Player player in players)
+        
+        for(int i = 0; i < players.Count; i++)
         {
-            int playerId = player.ActorNumber;
-            Vector3 position = preset.positions[playerId - 1];
+            int playerId = i + 1;
+            var areaData = startingData.sliceAreaPosition[i];
             var area = GetSliceArea();
             bool isLocal = playerId == PhotonNetwork.LocalPlayer.ActorNumber;
-            area.Initialize(playerId, isLocal);
+            area.Initialize(playerId, areaData.Positions, isLocal);
         }
+    }
+
+    private void ChangeSliceArea()
+    {
+        var preset = GetSliceAreaPreset();
+        SliceAreaPositionData areaData = preset.GetRandomArea();
+    }
+
+    private SliceAreaData GetSliceAreaPreset()
+    {
+        int playerCount = PhotonNetwork.CurrentRoom.PlayerCount;
+        SliceAreaData preset = sliceAreaPresets[playerCount - 1];
+        return preset;
     }
 
     private SliceArea GetSliceArea()
     {
         foreach(var area in sliceAreas)
         {
-            if (area.IsActive) continue;
+            if (area.IsMoving) continue;
 
             return area;
         }

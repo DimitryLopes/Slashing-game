@@ -308,6 +308,38 @@ MonoBehaviour:
   logText: {fileID: 370167178}
   maxLines: 15
   copyLogButton: {fileID: 1692014429}
+--- !u!1 &467381020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 467381021}
+  m_Layer: 0
+  m_Name: SliceAreaDatas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &467381021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 467381020}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1711037493}
+  m_Father: {fileID: 5342853648167769401}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &548394039
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,6 +443,37 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &581430653
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 581430654}
+  m_Layer: 0
+  m_Name: SliceAreaContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &581430654
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 581430653}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5342853648167769401}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1487731026
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,6 +807,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1692014427}
   m_CullTransparentMesh: 1
+--- !u!1 &1711037492
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1711037493}
+  - component: {fileID: 1711037494}
+  m_Layer: 0
+  m_Name: 1 Player SliceAreaData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1711037493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711037492}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 467381021}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1711037494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711037492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b708f2780deec041833dc0e2d34184f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCount: 1
+  sliceAreaPositions:
+  - sliceAreaPosition:
+    - positions:
+      - {x: 0, y: 0, z: 0}
+      - {x: 0, y: 0, z: 0}
+      - {x: 0, y: 0, z: 0}
+      - {x: 0, y: 0, z: 0}
+  startingSliceAreaPosition:
+    sliceAreaPosition:
+    - positions:
+      - {x: -9, y: -6, z: 0}
+      - {x: 9, y: -6, z: 0}
+      - {x: 9, y: 6, z: 0}
+      - {x: -9, y: 6, z: 0}
 --- !u!1 &2047728710
 GameObject:
   m_ObjectHideFlags: 0
@@ -904,6 +1026,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initialLives: 3
   targetSpawner: {fileID: 2429095752525566997}
+  sliceAreaPrefab: {fileID: 4941859663101299958, guid: 7f8d58f91d246ee4ba3a25b0d7f9e8cd, type: 3}
+  sliceAreaContainer: {fileID: 581430654}
+  sliceAreaPresets:
+  - {fileID: 1711037494}
 --- !u!114 &983638775542966152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1335,6 +1461,8 @@ Transform:
   m_Children:
   - {fileID: 2429095752525566996}
   - {fileID: 1445801302713764078}
+  - {fileID: 581430654}
+  - {fileID: 467381021}
   m_Father: {fileID: 8108958397804201342}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &5382271877935844168

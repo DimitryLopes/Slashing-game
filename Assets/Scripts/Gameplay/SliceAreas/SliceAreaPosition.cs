@@ -6,5 +6,7 @@ using UnityEngine;
 public class SliceAreaPosition
 {
     [SerializeField]
-    public readonly Vector3[] positions;
+    private Vector3[] positions;
+
+    public Vector3[] Positions => positions;
 }
