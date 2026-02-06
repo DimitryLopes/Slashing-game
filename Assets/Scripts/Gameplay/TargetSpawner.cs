@@ -65,6 +65,11 @@ public class TargetSpawner : MonoBehaviour
             SpawnTarget(TargetType.Boss);
         }
 
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            SpawnTestTarget();
+        }
+
         return;
 
         if (!canSpawn) return;
@@ -169,6 +174,27 @@ public class TargetSpawner : MonoBehaviour
             type
         );
 
+        target.Setup(data);
+    }
+
+    private void SpawnTestTarget()
+    {
+        Target target = GetAvailableTarget<Target>(TargetType.Default);
+        if (target == null)
+            return;
+        TargetSpawnPoint spawnPoint = spawnPoints.GetRandom();
+        Vector2 launchDirection = spawnPoint.GetLaunchDirection();
+        TargetData data = new TargetData(
+            1f,
+            1,
+            0,
+            spawnPoint.transform.position,
+            launchDirection,
+            TargetType.Default.ToString(),
+            0,
+            0,
+            TargetType.Default
+        );
         target.Setup(data);
     }
 

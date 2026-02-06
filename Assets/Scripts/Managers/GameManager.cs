@@ -18,9 +18,11 @@ public class GameManager : MonoBehaviourPun, IManager
 
     public static GameManager Instance { get; private set; }
     public int Lives { get; private set; }
-    private List<SliceArea> sliceAreas = new List<SliceArea>();
     public bool IsInitialized { get; private set; }
 
+    private List<SliceArea> sliceAreas = new List<SliceArea>();
+
+    private string currentSliceareaName;
     private float timeElapsed;
     private int bossesDefeated;
     private int targetsHit;
@@ -91,17 +93,34 @@ public class GameManager : MonoBehaviourPun, IManager
         {
             AssignSliceAreas();
         }
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            ChangeSliceArea();
+        }
     }
 
     #region Slice Area
     private void AssignSliceAreas()
     {
         SliceAreaData preset = GetSliceAreaPreset();
-        SliceAreaPositionData startingData = preset.StartingSliceArea; 
+        SliceAreaPositionData startingData = preset.StartingSliceArea;
 
-        var players = PhotonNetwork.CurrentRoom.Players.Values;
+        SetSliceArea(startingData);
+    }
+
+    private void ChangeSliceArea()
+    {
+        var preset = GetSliceAreaPreset();
+        SliceAreaPositionData areaPositionData = preset.GetRandomArea();
         
-        for(int i = 0; i < players.Count; i++)
+        SetSliceArea(areaPositionData);
+    }
+    private void SetSliceArea(SliceAreaPositionData startingData)
+    {
+        var players = PhotonNetwork.CurrentRoom.Players.Values;
+
+        for (int i = 0; i < players.Count; i++)
         {
             int playerId = i + 1;
             var areaData = startingData.sliceAreaPosition[i];
@@ -111,11 +130,6 @@ public class GameManager : MonoBehaviourPun, IManager
         }
     }
 
-    private void ChangeSliceArea()
-    {
-        var preset = GetSliceAreaPreset();
-        SliceAreaPositionData areaData = preset.GetRandomArea();
-    }
 
     private SliceAreaData GetSliceAreaPreset()
     {

@@ -853,13 +853,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCount: 1
   sliceAreaPositions:
-  - sliceAreaPosition:
+  - name: Half Left
+    sliceAreaPosition:
     - positions:
-      - {x: 0, y: 0, z: 0}
-      - {x: 0, y: 0, z: 0}
-      - {x: 0, y: 0, z: 0}
-      - {x: 0, y: 0, z: 0}
+      - {x: -9, y: -6, z: 0}
+      - {x: 0, y: -6, z: 0}
+      - {x: 0, y: 6, z: 0}
+      - {x: -9, y: 6, z: 0}
+  - name: Half Right
+    sliceAreaPosition:
+    - positions:
+      - {x: 0, y: -6, z: 0}
+      - {x: 9, y: -6, z: 0}
+      - {x: 9, y: 6, z: 0}
+      - {x: 0, y: 6, z: 0}
+  - name: Half Top
+    sliceAreaPosition:
+    - positions:
+      - {x: -9, y: 0, z: 0}
+      - {x: 9, y: 0, z: 0}
+      - {x: 9, y: 6, z: 0}
+      - {x: -9, y: 6, z: 0}
+  - name: Half Bottom
+    sliceAreaPosition:
+    - positions:
+      - {x: -9, y: -6, z: 0}
+      - {x: 9, y: -6, z: 0}
+      - {x: 9, y: 0, z: 0}
+      - {x: -9, y: 0, z: 0}
+  - name: All
+    sliceAreaPosition:
+    - positions:
+      - {x: -9, y: -6, z: 0}
+      - {x: 9, y: -6, z: 0}
+      - {x: 9, y: 6, z: 0}
+      - {x: -9, y: 6, z: 0}
   startingSliceAreaPosition:
+    name: All
     sliceAreaPosition:
     - positions:
       - {x: -9, y: -6, z: 0}
@@ -1025,7 +1055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialLives: 3
-  targetSpawner: {fileID: 2429095752525566997}
+  targetSpawner: {fileID: 3064238236025550412}
   sliceAreaPrefab: {fileID: 4941859663101299958, guid: 7f8d58f91d246ee4ba3a25b0d7f9e8cd, type: 3}
   sliceAreaContainer: {fileID: 581430654}
   sliceAreaPresets:
@@ -1141,7 +1171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1537845472959096900
 Transform:
   m_ObjectHideFlags: 0
@@ -1282,6 +1312,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TargetSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 7478015455357520483, guid: af549cc869fc18746833db8a054ea301, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8463398623628194137, guid: af549cc869fc18746833db8a054ea301, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4
@@ -1296,17 +1330,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2727438470055833249, guid: af549cc869fc18746833db8a054ea301, type: 3}
   m_PrefabInstance: {fileID: 2429095752525566995}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2429095752525566997 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6632612325581695092, guid: af549cc869fc18746833db8a054ea301, type: 3}
-  m_PrefabInstance: {fileID: 2429095752525566995}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f95fcb7dcdebfd54d97cc3a401b68b4b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2760510627972267284
 GameObject:
   m_ObjectHideFlags: 0
@@ -1372,7 +1395,7 @@ MonoBehaviour:
     target: {fileID: 7700582168173456530, guid: 133edf1492b4ba348b0ed15f20a0fc6e, type: 3}
     minScore: 250
     maxScore: 250
-  difficultyProfile: {fileID: 0}
+  difficultyProfile: {fileID: 11400000, guid: c710f6a29fa18a7478c3d673e8a4262d, type: 2}
   spawnContainer: {fileID: 0}
 --- !u!114 &4509322962061293210
 MonoBehaviour:

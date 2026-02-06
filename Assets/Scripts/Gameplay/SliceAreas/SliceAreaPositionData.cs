@@ -5,5 +5,7 @@ using UnityEngine;
 public class SliceAreaPositionData
 {
     [SerializeField]
+    private string name; //for identification in inspector
+    [SerializeField]
     public SliceAreaPosition[] sliceAreaPosition;
 }

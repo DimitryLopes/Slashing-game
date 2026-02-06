@@ -6,6 +6,7 @@ public class SliceArea : Activateable
     [SerializeField] private Color areaColor = Color.green;
     [SerializeField] private float areaAlpha = 0.2f;
     [SerializeField] private float borderThickness = 0.05f;
+    [SerializeField] private float startingMovementDuration = 2f;
 
     private readonly Vector3[] vertices = new Vector3[4];
     private readonly Vector3[] startVertices = new Vector3[4];
@@ -25,8 +26,8 @@ public class SliceArea : Activateable
 
         for (int i = 0; i < 4; i++)
         {
-            vertices[i] = initialVertices[i];
-            targetVertices[i] = initialVertices[i];
+            vertices[i] = Vector3.zero;
+            targetVertices[i] = Vector3.zero;
         }
 
         if (moveTweenId != -1)
@@ -34,6 +35,8 @@ public class SliceArea : Activateable
             LeanTween.cancel(moveTweenId);
             moveTweenId = -1;
         }
+
+        MoveTo(initialVertices, startingMovementDuration);
     }
 
     public void MoveTo(Vector3[] newVertices, float duration)
