@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,10 +20,11 @@ public class GameManager : MonoBehaviourPun, IManager
     public static GameManager Instance { get; private set; }
     public int Lives { get; private set; }
     public bool IsInitialized { get; private set; }
+    public SliceAreaPositionData CurrentSliceAreaData { get; private set; }
+
 
     private List<SliceArea> sliceAreas = new List<SliceArea>();
 
-    private string currentSliceareaName;
     private float timeElapsed;
     private int bossesDefeated;
     private int targetsHit;
@@ -82,6 +84,11 @@ public class GameManager : MonoBehaviourPun, IManager
         targetsHit = 0;
         bossesDefeated = 0;
         isPlaying = false;
+
+        foreach(SliceArea sliceArea in sliceAreas)
+        {
+            sliceArea.Clear();
+        }
     }
 
     private void Update()
@@ -116,20 +123,21 @@ public class GameManager : MonoBehaviourPun, IManager
         
         SetSliceArea(areaPositionData);
     }
-    private void SetSliceArea(SliceAreaPositionData startingData)
+
+    private void SetSliceArea(SliceAreaPositionData data)
     {
-        var players = PhotonNetwork.CurrentRoom.Players.Values;
+        var players = PhotonNetwork.PlayerList;
 
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < players.Length; i++)
         {
-            int playerId = i + 1;
-            var areaData = startingData.sliceAreaPosition[i];
-            var area = GetSliceArea();
-            bool isLocal = playerId == PhotonNetwork.LocalPlayer.ActorNumber;
-            area.Initialize(playerId, areaData.Positions, isLocal);
+            var playerId = players[i].ActorNumber;
+            var areaData = data.sliceAreaPosition[i];
+            var area = GetSliceArea(playerId);
+            area.MoveTo(areaData.Positions, 2f);
         }
-    }
 
+        CurrentSliceAreaData = data;
+    }
 
     private SliceAreaData GetSliceAreaPreset()
     {
@@ -138,17 +146,18 @@ public class GameManager : MonoBehaviourPun, IManager
         return preset;
     }
 
-    private SliceArea GetSliceArea()
+    private SliceArea GetSliceArea(int playerId)
     {
-        foreach(var area in sliceAreas)
-        {
-            if (area.IsMoving) continue;
+        bool isLocal = playerId == PhotonNetwork.LocalPlayer.ActorNumber;
 
-            return area;
+        foreach (var area in sliceAreas)
+        {
+            if (area.IsAvailable)  return area;
         }
 
         SliceArea sliceArea = Instantiate(sliceAreaPrefab, sliceAreaContainer);
         sliceAreas.Add(sliceArea);
+        sliceArea.Initialize(playerId, new Vector3[4], isLocal);
         return sliceArea;
     }
     #endregion

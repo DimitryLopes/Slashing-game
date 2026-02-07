@@ -8,13 +8,13 @@ public class SliceArea : Activateable
     [SerializeField] private float borderThickness = 0.05f;
     [SerializeField] private float startingMovementDuration = 2f;
 
-    private readonly Vector3[] vertices = new Vector3[4];
-    private readonly Vector3[] startVertices = new Vector3[4];
-    private readonly Vector3[] targetVertices = new Vector3[4];
+    private Vector3[] vertices = new Vector3[4];
+    private Vector3[] startVertices = new Vector3[4];
+    private Vector3[] targetVertices = new Vector3[4];
 
     private int moveTweenId = -1;
     public bool IsMoving => moveTweenId != -1;
-
+    public bool IsAvailable => OwnerId == -1 && !IsMoving;
     public int OwnerId { get; private set; }
     public bool IsLocalPlayerArea { get; private set; }
     public Vector3[] Vertices => vertices;
@@ -35,8 +35,6 @@ public class SliceArea : Activateable
             LeanTween.cancel(moveTweenId);
             moveTweenId = -1;
         }
-
-        MoveTo(initialVertices, startingMovementDuration);
     }
 
     public void MoveTo(Vector3[] newVertices, float duration)
@@ -92,6 +90,14 @@ public class SliceArea : Activateable
     public bool IsSliceValid(Vector2 from, Vector2 to)
     {
         return Contains(from) && Contains(to);
+    }
+
+    public void Clear()
+    {
+        OwnerId = -1;
+        IsLocalPlayerArea = false;
+        vertices = new Vector3[4];
+        targetVertices = new Vector3[4];
     }
 
 #if UNITY_EDITOR
