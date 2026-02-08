@@ -9,6 +9,7 @@ public class TargetSpawner : MonoBehaviour
     [SerializeField] private List<TargetTemplate> targetTemplates;
     [SerializeField] private DifficultyProfile difficultyProfile;
     [SerializeField] private Transform spawnContainer;
+    [SerializeField] private GameObject TheTHING;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
     private Dictionary<TargetType, List<Target>> instantiatedTargets;
@@ -159,15 +160,24 @@ public class TargetSpawner : MonoBehaviour
         if (target == null)
             return;
 
-        TargetSpawnPoint spawnPoint = spawnPoints.GetRandom();
-        Vector2 launchDirection = spawnPoint.GetLaunchDirection();
+        SliceAreaPositionData areaData = GameManager.Instance.CurrentSliceAreaData;
+        var targetPoint = areaData.EntireArea.GetRandomPointInArea(Constants.Targets.TARGET_AREA_TRESHOLD);
+
+        Vector2 startPoint = spawnPoints.GetRandom().transform.position;
+
+        float timeToTarget = 1.2f;
+        Vector2 gravity = Physics2D.gravity;
+
+        Vector2 initialVelocity =
+            (targetPoint - startPoint - 0.5f * gravity * timeToTarget * timeToTarget)
+            / timeToTarget;
 
         TargetData data = new TargetData(
-            1f,
-            1,
-            10,
-            spawnPoint.transform.position,
-            launchDirection,
+            1f,                     // size
+            1,                      // health
+            initialVelocity.magnitude, // speed (optional, if used elsewhere)
+            startPoint,             // start position
+            initialVelocity.normalized, // launch direction
             type.ToString(),
             template.minScore,
             template.maxScore,
@@ -175,6 +185,8 @@ public class TargetSpawner : MonoBehaviour
         );
 
         target.Setup(data);
+
+        TheTHING.transform.position = targetPoint;
     }
 
     private void SpawnTestTarget()

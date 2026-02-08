@@ -15,6 +15,8 @@ public class Constants
     public static class Targets
     {
         public const float DEFAULT_GRAVITY_SCALE = 1f;
+        //the target's trajectory must go through the area reduced by AREA_TRESHOLD to count as a valid trajectory
+        public const float TARGET_AREA_TRESHOLD = 0.8f;
     }
 
     public static class Tags

@@ -11,6 +11,7 @@ public class SliceAreaData : MonoBehaviour
     private SliceAreaPositionData startingSliceAreaPosition;
 
     public SliceAreaPositionData StartingSliceArea => startingSliceAreaPosition;
+    public List<SliceAreaPositionData> SliceAreaPositions => sliceAreaPositions;
     public int PlayerCount => playerCount;
 
     public SliceAreaPositionData GetRandomArea()

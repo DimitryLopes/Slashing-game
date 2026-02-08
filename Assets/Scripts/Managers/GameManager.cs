@@ -41,6 +41,14 @@ public class GameManager : MonoBehaviourPun, IManager
             return;
         }
 
+        foreach(var preset in sliceAreaPresets)
+        {
+            foreach(var area in preset.SliceAreaPositions)
+            {
+                area.Setup();
+            }
+        }
+
         Instance = this;
         IsInitialized = true;
     }
@@ -152,7 +160,7 @@ public class GameManager : MonoBehaviourPun, IManager
 
         foreach (var area in sliceAreas)
         {
-            if (area.IsAvailable)  return area;
+            if (area.IsAvailable || area.OwnerId == playerId)  return area;
         }
 
         SliceArea sliceArea = Instantiate(sliceAreaPrefab, sliceAreaContainer);
