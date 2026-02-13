@@ -10,6 +10,8 @@ public class GameScreen : UIScreen<GameScreenController>
     private TextMeshProUGUI livesText;
     [SerializeField]
     private TextMeshProUGUI scoreText;
+    [SerializeField]
+    private UISliceAreaView[] sliceAreaView;
 
     private float previousScore = 0;
 
@@ -20,6 +22,12 @@ public class GameScreen : UIScreen<GameScreenController>
         ClearScore();
         EventManager.OnPlayerDamaged.AddListener(UpdateLives);
         EventManager.OnScoreUpdated.AddListener(UpdateScore);
+
+        for(int i = 0; i < Controller.PlayerSliceAreas.Count; i++)
+        {
+            var area = Controller.PlayerSliceAreas[i];
+            sliceAreaView[i].Setup(area);
+        }
     }
 
     private void UpdateLives(int lives)

@@ -62,12 +62,13 @@ public class GameManager : MonoBehaviourPun, IManager
     public void StartGame()
     {
         ClearGameStats();
+        AssignSliceAreas();
 
         if (PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
 
         isPlaying = true;
-        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives));
+        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives, sliceAreas));
     }
 
     public void EndGame()
@@ -103,11 +104,6 @@ public class GameManager : MonoBehaviourPun, IManager
     {
         if (!isPlaying) return;
         timeElapsed += Time.deltaTime;
-
-        if(Input.GetKeyDown(KeyCode.L))
-        {
-            AssignSliceAreas();
-        }
 
         if (Input.GetKeyDown(KeyCode.K))
         {
