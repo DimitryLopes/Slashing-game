@@ -23,11 +23,25 @@ public class GameScreen : UIScreen<GameScreenController>
         EventManager.OnPlayerDamaged.AddListener(UpdateLives);
         EventManager.OnScoreUpdated.AddListener(UpdateScore);
 
-        for(int i = 0; i < Controller.PlayerSliceAreas.Count; i++)
+        for(int i = 0; i < sliceAreaView.Length; i++)
         {
-            var area = Controller.PlayerSliceAreas[i];
-            sliceAreaView[i].Setup(area);
+            if (Controller.PlayerSliceAreas.Count > i)
+            {
+                var area = Controller.PlayerSliceAreas[i];
+                sliceAreaView[i].Setup(area);
+            }
         }
+    }
+
+    protected override void OnAfterHide()
+    {
+        base.OnAfterShow();
+        foreach(var view in sliceAreaView)
+        {
+            view.Clear();
+        }
+        EventManager.OnScoreUpdated.RemoveListener(UpdateScore);
+        EventManager.OnPlayerDamaged.RemoveListener(UpdateLives);
     }
 
     private void UpdateLives(int lives)

@@ -3,7 +3,9 @@ using UnityEngine;
 public class MainCanvas : MonoBehaviour
 {
     [SerializeField]
-    public Transform ScreenContainer;
+    public RectTransform CanvasRect;
+    [SerializeField]
+    public Canvas Canvas;
 
     public static MainCanvas Instance { get; private set; }
 
