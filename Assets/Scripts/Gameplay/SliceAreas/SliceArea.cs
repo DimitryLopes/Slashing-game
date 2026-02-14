@@ -53,19 +53,24 @@ public class SliceArea : Activateable
 
         moveTweenId = LeanTween.value(gameObject, 0f, 1f, duration)
             .setEase(LeanTweenType.easeInOutQuad)
-            .setOnUpdate((float t) =>
-            {
-                for (int i = 0; i < 4; i++)
-                    vertices[i] = Vector3.Lerp(startVertices[i], targetVertices[i], t);
-            })
-            .setOnComplete(() =>
-            {
-                for (int i = 0; i < 4; i++)
-                    vertices[i] = targetVertices[i];
+            .setOnUpdate(OnUpdate)
+            .setOnComplete(OnComplete).id;
 
-                moveTweenId = -1;
-            })
-            .id;
+        void OnUpdate(float time)
+        {
+            for (int i = 0; i < 4; i++)
+                vertices[i] = Vector3.Lerp(startVertices[i], targetVertices[i], time);
+            EventManager.OnSliceAreaMoved.Invoke(this);
+        }
+
+        void OnComplete()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                vertices[i] = targetVertices[i];
+            }
+            moveTweenId = -1;
+        }
     }
 
     public bool Contains(Vector2 point)
