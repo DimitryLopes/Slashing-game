@@ -43,9 +43,6 @@ public class UISliceAreaView : MonoBehaviour
         if (sliceArea.OwnerId != areaOwnerID)
             return;
 
-        if (sliceArea.Vertices == null || sliceArea.Vertices.Length < 2)
-            return;
-
         int vertexCount = sliceArea.Vertices.Length;
 
         EnsureSideCount(vertexCount);

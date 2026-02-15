@@ -5,9 +5,8 @@ public class SliceArea : Activateable
     [Header("Area Settings")]
     [SerializeField] private Color areaColor = Color.green;
     [SerializeField] private float areaAlpha = 0.2f;
-    [SerializeField] private float borderThickness = 0.05f;
-    [SerializeField] private float startingMovementDuration = 2f;
 
+    [SerializeField]
     private Vector3[] vertices = new Vector3[4];
     private Vector3[] startVertices = new Vector3[4];
     private Vector3[] targetVertices = new Vector3[4];
