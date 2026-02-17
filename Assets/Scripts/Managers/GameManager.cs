@@ -131,11 +131,18 @@ public class GameManager : MonoBehaviourPun, IManager
     private void SetSliceArea(SliceAreaPositionData data)
     {
         var players = PhotonNetwork.PlayerList;
+        int playerCount = players.Length;
 
-        for (int i = 0; i < players.Length; i++)
+        List<int> areaIndices = new List<int>();
+        for (int i = 0; i < playerCount; i++)
+            areaIndices.Add(i);
+
+        areaIndices.Shuffle();
+
+        for (int i = 0; i < playerCount; i++)
         {
             var playerId = players[i].ActorNumber;
-            var areaData = data.sliceAreaPosition[i];
+            var areaData = data.sliceAreaPosition[areaIndices[i]];
             var area = GetSliceArea(playerId);
             area.MoveTo(areaData.Positions, 2f);
         }

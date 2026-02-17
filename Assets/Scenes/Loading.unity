@@ -499,15 +499,15 @@ MonoBehaviour:
   - name: All
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: -5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: -9, y: 5, z: 0}
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: -5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: -9, y: 5, z: 0}
   startingSliceAreaPosition:
     name: All
     sliceAreaPosition:
@@ -686,7 +686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &677907689
 Transform:
   m_ObjectHideFlags: 0
@@ -1109,38 +1109,38 @@ MonoBehaviour:
   - name: Half Left
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 0, y: -6, z: 0}
-      - {x: 0, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: -5, z: 0}
+      - {x: 0, y: -5, z: 0}
+      - {x: 0, y: 5, z: 0}
+      - {x: -9, y: 5, z: 0}
   - name: Half Right
     sliceAreaPosition:
     - positions:
-      - {x: 0, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: 0, y: 6, z: 0}
+      - {x: 0, y: -5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: 0, y: 5, z: 0}
   - name: Half Top
     sliceAreaPosition:
     - positions:
       - {x: -9, y: 0, z: 0}
       - {x: 9, y: 0, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: -9, y: 5, z: 0}
   - name: Half Bottom
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
+      - {x: -9, y: -5, z: 0}
+      - {x: 9, y: -5, z: 0}
       - {x: 9, y: 0, z: 0}
       - {x: -9, y: 0, z: 0}
   - name: All
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: -5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: -9, y: 5, z: 0}
   startingSliceAreaPosition:
     name: All
     sliceAreaPosition:
@@ -1344,6 +1344,7 @@ MonoBehaviour:
   sliceAreaContainer: {fileID: 581430654}
   sliceAreaPresets:
   - {fileID: 1711037494}
+  - {fileID: 531894165}
 --- !u!114 &983638775542966152
 MonoBehaviour:
   m_ObjectHideFlags: 0
