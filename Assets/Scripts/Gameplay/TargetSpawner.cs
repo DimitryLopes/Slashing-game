@@ -9,7 +9,6 @@ public class TargetSpawner : MonoBehaviour
     [SerializeField] private List<TargetTemplate> targetTemplates;
     [SerializeField] private DifficultyProfile difficultyProfile;
     [SerializeField] private Transform spawnContainer;
-    [SerializeField] private GameObject TheTHING;
 
     private Dictionary<TargetType, TargetTemplate> targetDatabase;
     private Dictionary<TargetType, List<Target>> instantiatedTargets;
@@ -185,8 +184,6 @@ public class TargetSpawner : MonoBehaviour
         );
 
         target.Setup(data);
-
-        TheTHING.transform.position = targetPoint;
     }
 
     private void SpawnTestTarget()

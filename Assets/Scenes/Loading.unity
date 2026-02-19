@@ -492,35 +492,35 @@ MonoBehaviour:
       - {x: 9, y: 5, z: 0}
       - {x: -9, y: 5, z: 0}
     - positions:
-      - {x: -9, y: 5, z: 0}
-      - {x: 9, y: 5, z: 0}
-      - {x: 9, y: 0, z: 0}
       - {x: -9, y: 0, z: 0}
+      - {x: 9, y: 0, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: -9, y: -5, z: 0}
   - name: All
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -5, z: 0}
-      - {x: 9, y: -5, z: 0}
-      - {x: 9, y: 5, z: 0}
       - {x: -9, y: 5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: -9, y: -5, z: 0}
     - positions:
-      - {x: -9, y: -5, z: 0}
-      - {x: 9, y: -5, z: 0}
-      - {x: 9, y: 5, z: 0}
       - {x: -9, y: 5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: -9, y: -5, z: 0}
   startingSliceAreaPosition:
     name: All
     sliceAreaPosition:
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: 5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: -9, y: -5, z: 0}
     - positions:
-      - {x: -9, y: -6, z: 0}
-      - {x: 9, y: -6, z: 0}
-      - {x: 9, y: 6, z: 0}
-      - {x: -9, y: 6, z: 0}
+      - {x: -9, y: 5, z: 0}
+      - {x: 9, y: 5, z: 0}
+      - {x: 9, y: -5, z: 0}
+      - {x: -9, y: -5, z: 0}
 --- !u!1 &548394039
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,7 +686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &677907689
 Transform:
   m_ObjectHideFlags: 0
@@ -723,10 +723,10 @@ MonoBehaviour:
   areaColor: {r: 0, g: 1, b: 0, a: 1}
   areaAlpha: 0.2
   vertices:
-  - {x: -9, y: 5, z: 0}
-  - {x: 9, y: 5, z: 0}
-  - {x: 9, y: 0, z: 0}
   - {x: -9, y: 0, z: 0}
+  - {x: 9, y: 0, z: 0}
+  - {x: 9, y: 5, z: 0}
+  - {x: -9, y: 5, z: 0}
 --- !u!1 &1487731026
 GameObject:
   m_ObjectHideFlags: 0
@@ -1684,7 +1684,6 @@ MonoBehaviour:
     maxScore: 250
   difficultyProfile: {fileID: 11400000, guid: c710f6a29fa18a7478c3d673e8a4262d, type: 2}
   spawnContainer: {fileID: 2049802223}
-  TheTHING: {fileID: 241398607}
 --- !u!114 &4509322962061293210
 MonoBehaviour:
   m_ObjectHideFlags: 0

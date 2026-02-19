@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviourPun, IManager
         ClearGameStats();
         AssignSliceAreas();
 
-        if (PhotonNetwork.IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient)
             targetSpawner.EnableSpawn();
 
         isPlaying = true;
@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviourPun, IManager
         SliceAreaData preset = GetSliceAreaPreset();
         SliceAreaPositionData startingData = preset.StartingSliceArea;
 
-        SetSliceArea(startingData);
+        SetSliceArea(startingData, true);
     }
 
     private void ChangeSliceArea()
@@ -128,8 +128,13 @@ public class GameManager : MonoBehaviourPun, IManager
         SetSliceArea(areaPositionData);
     }
 
-    private void SetSliceArea(SliceAreaPositionData data)
+    private void SetSliceArea(SliceAreaPositionData data, bool isLocal = false)
     {
+        if (!PhotonNetwork.IsMasterClient || !isLocal)
+            return;
+
+        CurrentSliceAreaData = data;
+
         var players = PhotonNetwork.PlayerList;
         int playerCount = players.Length;
 
@@ -139,15 +144,22 @@ public class GameManager : MonoBehaviourPun, IManager
 
         areaIndices.Shuffle();
 
+        List<int> actorNumbers = new List<int>();
         for (int i = 0; i < playerCount; i++)
-        {
-            var playerId = players[i].ActorNumber;
-            var areaData = data.sliceAreaPosition[areaIndices[i]];
-            var area = GetSliceArea(playerId);
-            area.MoveTo(areaData.Positions, 2f);
-        }
+            actorNumbers.Add(players[i].ActorNumber);
 
-        CurrentSliceAreaData = data;
+
+        if (isLocal) return;
+
+        float[] serializedPositions = SerializeAreas(data);
+
+        photonView.RPC(
+            nameof(RPCApplySliceAreas),
+            RpcTarget.All,
+            actorNumbers.ToArray(),
+            areaIndices.ToArray(),
+            serializedPositions
+        );
     }
 
     private SliceAreaData GetSliceAreaPreset()
@@ -171,6 +183,62 @@ public class GameManager : MonoBehaviourPun, IManager
         sliceArea.Initialize(playerId, new Vector3[4], isLocal);
         return sliceArea;
     }
+
+    #region RPC
+    private float[] SerializeAreas(SliceAreaPositionData data)
+    {
+        List<float> serialized = new List<float>();
+
+        foreach (var area in data.sliceAreaPosition)
+        {
+            foreach (var pos in area.Positions)
+            {
+                serialized.Add(pos.x);
+                serialized.Add(pos.y);
+            }
+        }
+
+        return serialized.ToArray();
+    }
+
+    [PunRPC]
+    private void RPCApplySliceAreas(int[] actorNumbers, int[] areaIndices, float[] serializedPositions)
+    {
+        int areaCount = areaIndices.Length;
+        int verticesPerArea = serializedPositions.Length / (areaCount * 2);
+
+        Vector3[][] deserializedAreas = new Vector3[areaCount][];
+
+        int index = 0;
+
+        for (int i = 0; i < areaCount; i++)
+        {
+            Vector3[] positions = new Vector3[verticesPerArea];
+
+            for (int j = 0; j < verticesPerArea; j++)
+            {
+                positions[j] = new Vector3(
+                    serializedPositions[index],
+                    serializedPositions[index + 1]
+                );
+
+                index += 2;
+            }
+
+            deserializedAreas[i] = positions;
+        }
+
+        for (int i = 0; i < actorNumbers.Length; i++)
+        {
+            int actorNumber = actorNumbers[i];
+            int areaIndex = areaIndices[i];
+
+            var area = GetSliceArea(actorNumber);
+            area.MoveTo(deserializedAreas[areaIndex], 2f);
+        }
+    }
+    #endregion
+
     #endregion
 
     #region End Game Screen Callbacks

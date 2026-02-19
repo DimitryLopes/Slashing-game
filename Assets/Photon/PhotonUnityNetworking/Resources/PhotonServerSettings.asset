@@ -50,6 +50,8 @@ MonoBehaviour:
   - RPCSpecialSetup
   - UpdateBladePosition
   - RPCUpdateLives
+  - RPCUpdateSliceAreas
+  - RPCApplySliceAreas
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
