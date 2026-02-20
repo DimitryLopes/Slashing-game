@@ -64,11 +64,11 @@ public class GameManager : MonoBehaviourPun, IManager
         ClearGameStats();
         AssignSliceAreas();
 
-        if (!PhotonNetwork.IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient)        
             targetSpawner.EnableSpawn();
+        
 
         isPlaying = true;
-        ScreenManager.Instance.Show<GameScreen>(new GameScreenController(Lives, sliceAreas));
     }
 
     public void EndGame()
@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviourPun, IManager
         SliceAreaData preset = GetSliceAreaPreset();
         SliceAreaPositionData startingData = preset.StartingSliceArea;
 
-        SetSliceArea(startingData, true);
+        SetSliceArea(startingData);
     }
 
     private void ChangeSliceArea()
@@ -128,9 +128,9 @@ public class GameManager : MonoBehaviourPun, IManager
         SetSliceArea(areaPositionData);
     }
 
-    private void SetSliceArea(SliceAreaPositionData data, bool isLocal = false)
+    private void SetSliceArea(SliceAreaPositionData data)
     {
-        if (!PhotonNetwork.IsMasterClient || !isLocal)
+        if (!PhotonNetwork.IsMasterClient)
             return;
 
         CurrentSliceAreaData = data;
@@ -147,9 +147,6 @@ public class GameManager : MonoBehaviourPun, IManager
         List<int> actorNumbers = new List<int>();
         for (int i = 0; i < playerCount; i++)
             actorNumbers.Add(players[i].ActorNumber);
-
-
-        if (isLocal) return;
 
         float[] serializedPositions = SerializeAreas(data);
 
@@ -236,7 +233,13 @@ public class GameManager : MonoBehaviourPun, IManager
             var area = GetSliceArea(actorNumber);
             area.MoveTo(deserializedAreas[areaIndex], 2f);
         }
+
+        if (ScreenManager.Instance.ActiveScreen is GameScreen) return;
+
+        var controller = new GameScreenController(Lives, sliceAreas);
+        ScreenManager.Instance.Show<GameScreen>(controller);
     }
+
     #endregion
 
     #endregion
