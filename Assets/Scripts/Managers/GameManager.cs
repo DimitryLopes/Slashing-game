@@ -16,12 +16,14 @@ public class GameManager : MonoBehaviourPun, IManager
     private Transform sliceAreaContainer;
     [SerializeField]
     private SliceAreaData[] sliceAreaPresets;
+    [SerializeField]
+    private GameObject playerControllerPrefab;
 
     public static GameManager Instance { get; private set; }
     public int Lives { get; private set; }
     public bool IsInitialized { get; private set; }
     public SliceAreaPositionData CurrentSliceAreaData { get; private set; }
-
+    private PlayerController playerController;
 
     private List<SliceArea> sliceAreas = new List<SliceArea>();
 
@@ -61,12 +63,20 @@ public class GameManager : MonoBehaviourPun, IManager
 
     public void StartGame()
     {
+        if (playerController == null)
+        {
+            playerController = PhotonNetwork.Instantiate(
+                playerControllerPrefab.name,
+                Vector3.zero,
+                Quaternion.identity).GetComponent<PlayerController>();
+
+        }
+
         ClearGameStats();
-        AssignSliceAreas();
+        AssignSliceAreas();        
 
         if (!PhotonNetwork.IsMasterClient)        
-            targetSpawner.EnableSpawn();
-        
+            targetSpawner.EnableSpawn();        
 
         isPlaying = true;
     }
@@ -98,6 +108,8 @@ public class GameManager : MonoBehaviourPun, IManager
         {
             sliceArea.Clear();
         }
+
+        playerController.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -231,6 +243,10 @@ public class GameManager : MonoBehaviourPun, IManager
             int areaIndex = areaIndices[i];
 
             var area = GetSliceArea(actorNumber);
+            if(area.OwnerId == PhotonNetwork.LocalPlayer.ActorNumber)
+            {
+                playerController.Setup(area);
+            }
             area.MoveTo(deserializedAreas[areaIndex], 2f);
         }
 

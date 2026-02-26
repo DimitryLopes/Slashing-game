@@ -235,8 +235,8 @@ public class TargetSpawner : MonoBehaviour
                 string.Format(Constants.Assets.TARGET_PREFAB_FORMAT, type),
                 transform.position,
                 Quaternion.identity
-            )
-            .GetComponent<T>();
+            ).GetComponent<T>();
+
         newTarget.transform.SetParent(spawnContainer);
         instantiatedTargets[type].Add(newTarget);
         return newTarget;

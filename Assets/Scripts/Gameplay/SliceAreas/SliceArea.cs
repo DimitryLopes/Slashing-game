@@ -18,6 +18,11 @@ public class SliceArea : Activateable
     public bool IsLocalPlayerArea { get; private set; }
     public Vector3[] Vertices => vertices;
 
+    public float Top { get; private set; }
+    public float Bottom { get; private set; }
+    public float Left { get; private set; }
+    public float Right { get; private set; }
+
     public void Initialize(int ownerId, Vector3[] initialVertices, bool isLocal)
     {
         OwnerId = ownerId;
@@ -64,13 +69,33 @@ public class SliceArea : Activateable
 
         void OnComplete()
         {
-            for (int i = 0; i < 4; i++)
+            float minX = float.MaxValue;
+            float maxX = float.MinValue;
+            float minY = float.MaxValue;
+            float maxY = float.MinValue;
+
+            for (int i = 0; i < targetVertices.Length; i++)
             {
-                vertices[i] = targetVertices[i];
+                Vector3 v = targetVertices[i];
+
+                minX = Mathf.Min(minX, v.x);
+                maxX = Mathf.Max(maxX, v.x);
+                minY = Mathf.Min(minY, v.y);
+                maxY = Mathf.Max(maxY, v.y);
+
+                vertices[i] = v;
             }
+
+            Left = minX;
+            Right = maxX;
+            Bottom = minY;
+            Top = maxY;
+
             moveTweenId = -1;
         }
     }
+
+
 
     public bool Contains(Vector2 point)
     {

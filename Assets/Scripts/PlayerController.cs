@@ -1,6 +1,7 @@
-using UnityEngine;
 using Photon.Pun;
 using System.Collections.Generic;
+using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class PlayerController : MonoBehaviourPun
 {
@@ -14,18 +15,25 @@ public class PlayerController : MonoBehaviourPun
     private bool isCutting;
 
     private readonly HashSet<Collider2D> hitsThisFrame = new();
-    private readonly RaycastHit2D[] raycastBuffer = new RaycastHit2D[1];
     private readonly Dictionary<Collider2D, Vector2> lastHitPoint = new();
     private readonly Dictionary<Collider2D, HitInfo> activeStrikes = new();
+
+    private SliceArea currentSliceArea;
 
     private byte PlayerId => (byte)photonView.OwnerActorNr;
 
     void Start()
     {
         mainCamera = Camera.main;
+    }
 
-        if (photonView.IsMine)
+    public void Setup(SliceArea area)
+    {
+        if (photonView.IsMine && playerBlade == null) 
             playerBlade = Instantiate(bladePrefab, transform);
+
+        currentSliceArea = area;
+        gameObject.SetActive(true);
     }
 
     void Update()
@@ -53,6 +61,19 @@ public class PlayerController : MonoBehaviourPun
         {
             isCutting = false;
         }
+
+        EnsureBounds();
+
+    }
+
+    private void EnsureBounds()
+    {
+        Vector3 pos = playerBlade.transform.position;
+
+        pos.x = Mathf.Clamp(pos.x, currentSliceArea.Left, currentSliceArea.Right);
+        pos.y = Mathf.Clamp(pos.y, currentSliceArea.Bottom, currentSliceArea.Top);
+
+        playerBlade.transform.position = pos;
     }
 
     private void PerformLinecast(Vector2 from, Vector2 to)
@@ -154,7 +175,7 @@ public class PlayerController : MonoBehaviourPun
 
     private void MoveBlade(Vector2 position)
     {
-        transform.position = position;
+        playerBlade.transform.position = position;
     }
 
     [PunRPC]
