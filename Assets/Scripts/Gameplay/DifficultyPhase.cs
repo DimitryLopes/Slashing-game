@@ -15,6 +15,8 @@ public class DifficultyPhase
 
     [Header("Active Caps")]
     public List<TargetActiveCap> activeCaps;
+
+    public float areaSwapInterval;
 }
 
 [Serializable]

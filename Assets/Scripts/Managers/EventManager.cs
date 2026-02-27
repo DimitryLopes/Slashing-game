@@ -41,5 +41,6 @@ public class EventManager : MonoBehaviour, IManager
     public static UnityEvent<Player> OnPlayerReadyStatusChanged = new UnityEvent<Player>();
     //public static Action<string> OnJoinRoomFailedEvent;
     //In Game
+    public static UnityEvent OnSliceAreaMoveTimerEnded = new UnityEvent();
     public static UnityEvent<SliceArea> OnSliceAreaMoved = new UnityEvent<SliceArea>();
 }

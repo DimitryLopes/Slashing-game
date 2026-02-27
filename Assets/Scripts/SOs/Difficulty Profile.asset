@@ -29,6 +29,7 @@ MonoBehaviour:
       maxActive: 1
     - type: 2
       maxActive: 3
+    areaSwapInterval: 25
   - startTime: 30
     spawnInterval: 0.66
     spawnWeights:
@@ -45,6 +46,7 @@ MonoBehaviour:
       maxActive: 1
     - type: 2
       maxActive: 3
+    areaSwapInterval: 15
   - startTime: 60
     spawnInterval: 1
     spawnWeights:
@@ -61,3 +63,4 @@ MonoBehaviour:
       maxActive: 1
     - type: 2
       maxActive: 3
+    areaSwapInterval: 15

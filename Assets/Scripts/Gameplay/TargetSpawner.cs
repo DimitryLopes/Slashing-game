@@ -15,7 +15,11 @@ public class TargetSpawner : MonoBehaviour
 
     private float elapsedTime;
     private float spawnTimer;
-    private bool canSpawn;
+    private float areaSwapTimer;
+
+    private bool isPlaying;
+    private bool isAreaSwapping;
+    private bool CanSpawn => isPlaying && !isAreaSwapping;
 
     private DifficultyPhase currentPhase;
 
@@ -28,56 +32,63 @@ public class TargetSpawner : MonoBehaviour
     {
         elapsedTime = 0f;
         spawnTimer = 0f;
-        canSpawn = true;
+        isPlaying = true;
         currentPhase = difficultyProfile.phases[0];
+        EventManager.OnSliceAreaMoved.AddListener(OnSliceAreaMoved);
     }
 
     public void DisableSpawn()
     {
-        canSpawn = false;
+        isPlaying = false;
         DeactivateAllTargets();
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Q))
-        {
-            SpawnTarget(TargetType.Default);
-        }
+        //if(Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    SpawnTarget(TargetType.Default);
+        //}
 
-        if(Input.GetKeyDown(KeyCode.W))
-        {
-            SpawnTarget(TargetType.Explosive);
-        }
+        //if(Input.GetKeyDown(KeyCode.W))
+        //{
+        //    SpawnTarget(TargetType.Explosive);
+        //}
 
-        if(Input.GetKeyDown(KeyCode.E))
-        {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, 1);
-        }
+        //if(Input.GetKeyDown(KeyCode.E))
+        //{
+        //    SpawnPlayerTarget(TargetType.SpecificPlayer, 1);
+        //}
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
-        }
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    SpawnPlayerTarget(TargetType.SpecificPlayer, 2);
+        //}
 
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            SpawnTarget(TargetType.Boss);
-        }
+        //if(Input.GetKeyDown(KeyCode.T))
+        //{
+        //    SpawnTarget(TargetType.Boss);
+        //}
 
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            SpawnTestTarget();
-        }
+        //if (Input.GetKeyDown(KeyCode.Y))
+        //{
+        //    SpawnTestTarget();
+        //}
 
-        return;
-
-        if (!canSpawn) return;
+        if (!isPlaying) return;
 
         elapsedTime += Time.deltaTime;
         spawnTimer += Time.deltaTime;
+        areaSwapTimer += Time.deltaTime;
 
         currentPhase = difficultyProfile.GetPhase(elapsedTime);
+
+        if(areaSwapTimer >= currentPhase.areaSwapInterval)
+        {
+            areaSwapTimer = 0f;
+            isAreaSwapping = true;
+            EventManager.OnSliceAreaMoveTimerEnded.Invoke();
+        }
 
         if (spawnTimer < currentPhase.spawnInterval) return;
 
@@ -101,6 +112,7 @@ public class TargetSpawner : MonoBehaviour
         }
     }
 
+    #region Target Management
     private void InitializeDatabases()
     {
         targetDatabase = new Dictionary<TargetType, TargetTemplate>();
@@ -250,6 +262,14 @@ public class TargetSpawner : MonoBehaviour
                 target.gameObject.SetActive(false);
         }
     }
+    #endregion
+
+    #region Area Swap Handling
+    private void OnSliceAreaMoved(SliceArea area)
+    {
+        isAreaSwapping = false;
+    }
+    #endregion
 }
 
 

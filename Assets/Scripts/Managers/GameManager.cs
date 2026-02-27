@@ -75,14 +75,22 @@ public class GameManager : MonoBehaviourPun, IManager
         ClearGameStats();
         AssignSliceAreas();        
 
-        if (!PhotonNetwork.IsMasterClient)        
-            targetSpawner.EnableSpawn();        
+        if (PhotonNetwork.IsMasterClient)
+        {
+            targetSpawner.EnableSpawn();
+            EventManager.OnSliceAreaMoveTimerEnded.AddListener(ChangeSliceArea);
+        }     
 
         isPlaying = true;
     }
 
     public void EndGame()
     {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            EventManager.OnSliceAreaMoveTimerEnded.RemoveListener(ChangeSliceArea);
+        }
+
         targetSpawner.DisableSpawn();
         GameOverScreenController controller = new GameOverScreenController
             (
@@ -116,11 +124,6 @@ public class GameManager : MonoBehaviourPun, IManager
     {
         if (!isPlaying) return;
         timeElapsed += Time.deltaTime;
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            ChangeSliceArea();
-        }
     }
 
     #region Slice Area
